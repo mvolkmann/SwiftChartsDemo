@@ -76,15 +76,13 @@
 		1A17BE3E285964FB00B16F56 /* SwiftChartsDemo */ = {
 			isa = PBXGroup;
 			children = (
-				1AC4B1F228AC381200093F25 /* SwiftChartsDemo.entitlements */,
 				1A17BE3F285964FB00B16F56 /* SwiftChartsDemoApp.swift */,
-				1A17BE41285964FB00B16F56 /* ContentView.swift */,
-				1A17BE4D285A255A00B16F56 /* PlayerChartView.swift */,
+				1AC4B1F228AC381200093F25 /* SwiftChartsDemo.entitlements */,
 				1AC4B1DB28AC0A9200093F25 /* HealthStore.swift */,
 				1AC4B1E028AC0B4200093F25 /* Global.swift */,
-				1A17BE4F285A25C300B16F56 /* HeartChartView.swift */,
 				1AC4B1DD28AC0AD100093F25 /* Extensions */,
 				1AC4B1E528AC0D9900093F25 /* Models */,
+				1AC4B20128AC80EE00093F25 /* Views */,
 				1AC4B1E228AC0D2D00093F25 /* ViewModels */,
 				1A17BE43285964FC00B16F56 /* Assets.xcassets */,
 				1A17BE45285964FC00B16F56 /* Preview Content */,
@@ -127,6 +125,16 @@
 				1AC4B1E828AC0E0900093F25 /* SleepMetrics.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		1AC4B20128AC80EE00093F25 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				1A17BE41285964FB00B16F56 /* ContentView.swift */,
+				1A17BE4F285A25C300B16F56 /* HeartChartView.swift */,
+				1A17BE4D285A255A00B16F56 /* PlayerChartView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

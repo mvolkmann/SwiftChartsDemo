@@ -33,12 +33,22 @@ struct HeartChartView: View {
         timespan != lastTimespan
     }
 
+    private var maxValue: Double {
+        let item = data.max { a, b in a.value < b.value }
+        return item?.value ?? 0.0
+    }
+
+    private var minValue: Double {
+        let item = data.min { a, b in a.value < b.value }
+        return item?.value ?? 0.0
+    }
+
     private var startDate: Date {
         let today = Date().withoutTime
         return timespan == "1 Day" ? today.yesterday :
             timespan == "1 Week" ? today.daysAgo(7) :
             timespan == "1 Month" ? today.monthsAgo(1) :
-            timespan == "3 Month" ? today.monthsAgo(3) :
+            //timespan == "3 Month" ? today.monthsAgo(3) :
             today
     }
 
@@ -49,7 +59,8 @@ struct HeartChartView: View {
                 .fontWeight(.bold)
             picker(
                 label: "Span",
-                values: ["1 Day", "1 Week", "1 Month", "3 Months"],
+                // values: ["1 Day", "1 Week", "1 Month", "3 Months"],
+                values: ["1 Day", "1 Week", "1 Month"],
                 selected: $timespan
             )
             picker(
@@ -66,13 +77,19 @@ struct HeartChartView: View {
                 }
                 Spacer()
             }
-            //Chart(vm.heartRate) { heart in
+            Text("values go from \(minValue) to \(maxValue)")
             Chart(data) { heart in
                 LineMark(
                     x: .value("Date", heart.date),
                     y: .value("BPM", heart.value)
                 )
+                // Smooth the line.
+                // .interpolationMethod(.catmullRom)
+                // .interpolationMethod(.cardinal)
+                .interpolationMethod(.monotone)
             }
+            // TODO: How can you adjust the y axis min and max values?
+            // .chartYScale(range: 40 ... 200)
         }
         .padding()
         .task {
