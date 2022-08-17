@@ -4,7 +4,7 @@ enum Frequency {
     case minute, hour, day
 }
 
-struct Metric: Identifiable {
+struct Metric: Hashable, Identifiable {
     let name: String
     let identifier: HKQuantityTypeIdentifier
     let unit: HKUnit
@@ -13,6 +13,10 @@ struct Metric: Identifiable {
     let lowerIsBetter: Bool
 
     var id = UUID()
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+    }
 }
 
 class Metrics {
