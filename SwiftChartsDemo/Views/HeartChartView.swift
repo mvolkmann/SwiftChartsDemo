@@ -188,6 +188,7 @@ struct HeartChartView: View {
         GeometryReader { nthItem in
             // Taps are not registered without using .contentShape.
             Rectangle().fill(.clear).contentShape(Rectangle())
+                // TODO: Change this to recognize dragging onto a new Rectangle.
                 .onTapGesture { item in
                     let x = item.x - nthItem[proxy.plotAreaFrame].origin.x
                     let date: String? = proxy.value(atX: x)
