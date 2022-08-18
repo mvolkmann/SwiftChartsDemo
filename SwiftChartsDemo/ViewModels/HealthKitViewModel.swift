@@ -184,9 +184,9 @@ final class HealthKitViewModel: ObservableObject {
         let frequencyToUse = frequency ?? metric.frequency
 
         let interval =
-        frequencyToUse == .minute ? DateComponents(minute: 1) :
-        frequencyToUse == .hour ? DateComponents(hour: 1) :
-        DateComponents(day: 1)
+            frequencyToUse == .minute ? DateComponents(minute: 1) :
+            frequencyToUse == .hour ? DateComponents(hour: 1) :
+            DateComponents(day: 1)
 
         let collection = try await store.queryQuantityCollection(
             typeId: metric.identifier,
@@ -201,7 +201,7 @@ final class HealthKitViewModel: ObservableObject {
             let quantity = quantityFunction(data)
             let value = quantity?.doubleValue(for: metric.unit) ?? 0
             return DatedValue(
-                date: metric.frequency == .day ? date.ymd : date.ymdhms,
+                date: frequencyToUse == .day ? date.ymd : date.ymdhms,
                 ms: date.milliseconds,
                 unit: metric.unit.unitString,
                 value: value
@@ -437,283 +437,14 @@ final class HealthKitViewModel: ObservableObject {
         )!
     }
 
-    func load() async {
+    func requestPermission() async {
         do {
             // Request permission from the user to access HealthKit data.
             // If they have already granted permission,
             // they will not be prompted again.
             try await store.requestAuthorization()
-
-            try await loadHealthKitData()
         } catch {
             handleError("HealthKitViewModel.load", error)
         }
-    }
-
-    // This method must run on the main dispatch queue
-    // because it updates @Published variables.
-    @MainActor
-    // swiftlint:disable function_body_length
-    private func loadHealthKitData() async throws {
-        guard HKHealthStore.isHealthDataAvailable() else {
-            handleError(
-                "HealthKitViewModel.loadHealthKitData",
-                "HealthKit data not available"
-            )
-            return
-        }
-
-        let last3Months = Date().monthsAgo(3)
-
-        // We always want sleep data for the past three months
-        // because the sleep charts require that.
-        try await getSleepData(startDate: last3Months)
-
-        // Get active energy burned per day.
-        activeEnergyBurned = try await getHealthKitData(
-            identifier: .activeEnergyBurned,
-            frequency: .hour
-        ) { data in data.sumQuantity() }
-        // print("activeEnergyBurned = \(activeEnergyBurned)")
-
-        // Get Apple exercise time in minutes per day.
-        appleExerciseTime = try await getHealthKitData(
-            identifier: .appleExerciseTime
-        ) { data in data.sumQuantity() }
-        // print("appleExerciseTime = \(appleExerciseTime)")
-
-        // Get Apple move time in calories per day.
-        appleMoveTime = try await getHealthKitData(
-            identifier: .appleMoveTime
-        ) { data in data.sumQuantity() }
-        // print("appleMoveTime = \(appleMoveTime)")
-
-        // Get Apple stand time in minutes per day.
-        appleStandTime = try await getHealthKitData(
-            identifier: .appleStandTime
-        ) { data in data.sumQuantity() }
-        // print("appleStandTime = \(appleStandTime)")
-
-        // Get basal energy burned in calories per day.
-        // This is reported as "Resting Energy" in the Apple Health app.
-        basalEnergyBurned = try await getHealthKitData(
-            identifier: .basalEnergyBurned,
-            frequency: .hour
-        ) { data in data.sumQuantity() }
-        // print("basalEnergyBurned = \(basalEnergyBurned)")
-
-        // Get one average body mass value per day.
-        // This is reported as "Weight" in the Apple Health app.
-        // try await loadBodyMass()
-        bodyMass = try await getHealthKitData(
-            identifier: .bodyMass
-        ) { data in data.averageQuantity() }
-        // print("bodyMass = \(bodyMass)")
-
-        // Get cycling miles per day.
-        // This is reported as "Cycling Distance" in the Apple Health app.
-        distanceCycling = try await getHealthKitData(
-            identifier: .distanceCycling
-        ) { data in data.sumQuantity() }
-        // print("distanceCycling = \(distanceCycling)")
-
-        // Get walking plus running miles per day.
-        // This is reported as "Walking + Running Distance" in the Apple Health app.
-        // try await loadDistanceWalkingRunning()
-        distanceWalkingRunning = try await getHealthKitData(
-            identifier: .distanceWalkingRunning
-        ) { data in data.sumQuantity() }
-        // print("distanceWalkingRunning = \(distanceWalkingRunning)")
-
-        // Get wheelchair miles per day.
-        distanceWheelchair = try await getHealthKitData(
-            identifier: .distanceWheelchair
-        ) { data in data.sumQuantity() }
-        // print("distanceWheelchair = \(distanceWheelchair)")
-
-        // Get environmental audio exposure in decibels per day.
-        // This is reported as "Environmental Sound Levels" in the Apple Health app.
-        environmentalAudioExposure = try await getHealthKitData(
-            identifier: .environmentalAudioExposure
-        ) { data in data.averageQuantity() }
-        // print("environmentalAudioExposure = \(environmentalAudioExposure)")
-
-        // Get flights climbed per day.
-        flightsClimbed = try await getHealthKitData(
-            identifier: .flightsClimbed
-        ) { data in data.sumQuantity() }
-        // print("flightsClimbed = \(flightsClimbed)")
-
-        // Get the average headphone auto exposure in decibels per day.
-        // This is reported as "Headphone Audio Levels" in the Apple Health app.
-        // TODO: Don't we want the maximum each day? I couldn't get that to work.
-        headphoneAudioExposure = try await getHealthKitData(
-            identifier: .headphoneAudioExposure
-        ) { data in data.averageQuantity() }
-        // print("headphoneAudioExposure = \(headphoneAudioExposure)")
-
-        // Get average heart rate each minute.
-        heartRate = try await getHealthKitData(
-            identifier: .heartRate,
-            // frequency: .minute
-            frequency: .hour
-        ) { data in data.averageQuantity() }
-        print("heartRate = \(heartRate)")
-
-        // Get heart rate variability per day.
-        // try await loadHeartRateVariabilitySDNN()
-        heartRateVariabilitySDNN = try await getHealthKitData(
-            identifier: .heartRateVariabilitySDNN
-        ) { data in data.averageQuantity() }
-        // print("heartRateVariabilitySDNN = \(heartRateVariabilitySDNN)")
-
-        // Get the last 10 high heart rate events.
-        highHeartRateEvents = try await getHealthKitEvents(
-            identifier: .highHeartRateEvent
-        )
-        // print("highHeartRateEvents =", highHeartRateEvents)
-
-        // Get the last 10 irregular heart rhythm events.
-        irregularHeartRhythmEvents = try await getHealthKitEvents(
-            identifier: .irregularHeartRhythmEvent
-        )
-        // print("irregularHeartRhythmEvents =", irregularHeartRhythmEvents)
-
-        // Get one lean body mass value per day.
-        leanBodyMass = try await getHealthKitData(
-            identifier: .leanBodyMass
-        ) { data in data.averageQuantity() }
-        // print("leanBodyMass = \(leanBodyMass)")
-
-        // Get the last 10 low heart rate events.
-        lowHeartRateEvents = try await getHealthKitEvents(identifier: .lowHeartRateEvent)
-        // print("lowHeartRateEvents =", lowHeartRateEvents)
-
-        // Get number of times fallen per day.
-        // If there are no falls, an empty array is used.
-        // try await loadNumberOfTimesFallen()
-        numberOfTimesFallen = try await getHealthKitData(
-            identifier: .numberOfTimesFallen
-            // Mark has one fall recorded in this time period.
-            // startDate: Date.from(year: 2022, month: 4, day: 1),
-            // endDate: Date.from(year: 2022, month: 4, day: 30)
-        ) { data in data.sumQuantity() }
-        // print("numberOfTimesFallen = \(numberOfTimesFallen)")
-
-        // Get average oxygen saturation each day.
-        // This is reported as "Blood Oxygen" in the Apple Health app.
-        oxygenSaturation = try await getHealthKitData(
-            identifier: .oxygenSaturation
-        ) { data in data.averageQuantity() }
-        // print("oxygenSaturation = \(oxygenSaturation)")
-
-        // Get push count (wheelchair) per day.
-        pushCount = try await getHealthKitData(
-            identifier: .pushCount,
-            frequency: .hour
-        ) { data in data.sumQuantity() }
-        // print("pushCount = \(pushCount)")
-
-        // Get average respiratory rate (breaths per minute) each day.
-        respiratoryRate = try await getHealthKitData(
-            identifier: .respiratoryRate
-        ) { data in data.averageQuantity() }
-        // print("respiratoryRate = \(respiratoryRate)")
-
-        // Get average resting heart rate each day.
-        restingHeartRate = try await getHealthKitData(
-            identifier: .restingHeartRate
-        ) { data in data.averageQuantity() }
-        // print("restingHeartRate = \(restingHeartRate)")
-
-        // Get weekly six minute walking test results in meters.
-        // The maximum value returned is 500.
-        sixMinuteWalkTestDistance = try await getHealthKitData(
-            identifier: .sixMinuteWalkTestDistance
-        ) { data in data.averageQuantity() }
-        // print("sixMinuteWalkTestDistance = \(sixMinuteWalkTestDistance)")
-
-        // Get average stair ascent speed per day in feet per second.
-        // This is reported as "Stair Speed: Up" in the Apple Health app.
-        stairAscentSpeed = try await getHealthKitData(
-            identifier: .stairAscentSpeed
-        ) { data in data.averageQuantity() }
-        // print("stairAscentSpeed = \(stairAscentSpeed)")
-
-        // Get average stair descent speed per day in feet per second.
-        // This is reported as "Stair Speed: Down" in the Apple Health app.
-        stairDescentSpeed = try await getHealthKitData(
-            identifier: .stairDescentSpeed
-        ) { data in data.averageQuantity() }
-        // print("stairDescentSpeed = \(stairDescentSpeed)")
-
-        // Get step count per day.
-        // This is reported as "Steps" in the Apple Health app.
-        stepCount = try await getHealthKitData(
-            identifier: .stepCount,
-            frequency: .hour
-        ) { data in data.sumQuantity() }
-        // print("stepCount = \(stepCount)")
-
-        // Get VO2 max average per day.
-        vo2Max = try await getHealthKitData(
-            identifier: .vo2Max
-        ) { data in data.averageQuantity() }
-        // print("vo2Max = \(vo2Max)")
-
-        // Get average walking asymmetry percentage per day.
-        // try await loadWalkingAsymmetryPercentage()
-        walkingAsymmetryPercentage = try await getHealthKitData(
-            identifier: .walkingAsymmetryPercentage
-        ) { data in data.averageQuantity() }
-        // print("walkingAsymmetryPercentage = \(walkingAsymmetryPercentage)")
-
-        // Get average walking double support percentage per day.
-        // This is reported as "Double Support Time" in the Apple Health app.
-        walkingDoubleSupportPercentage = try await getHealthKitData(
-            identifier: .walkingDoubleSupportPercentage
-        ) { data in data.averageQuantity() }
-        // print("walkingDoubleSupportPercentage = \(walkingDoubleSupportPercentage)")
-
-        // Get walking heart rate average in beats per minute each day.
-        walkingHeartRateAverage = try await getHealthKitData(
-            identifier: .walkingHeartRateAverage
-        ) { data in data.averageQuantity() }
-        // print("walkingHeartRateAverage = \(walkingHeartRateAverage)")
-
-        // Get average walking speed in miles per hour each day.
-        walkingSpeed = try await getHealthKitData(
-            identifier: .walkingSpeed,
-            frequency: .hour
-        ) { data in data.averageQuantity() }
-        // Convert meters per second to miles per hour.
-        // I couldn't find a way to request MPH as an HKUnit above.
-        walkingSpeed = walkingSpeed.map { data in
-            DatedValue(
-                date: data.date,
-                ms: data.ms,
-                unit: Metrics.shared.map[.walkingSpeed]!.unit.unitString,
-                value: data.value * 2.23694
-            )
-        }
-        // print("walkingSpeed = \(walkingSpeed)")
-
-        // Apple only computes one walking steadiness value (0 to 1) per week.
-        // Measuring this requires the user to carry their iPhone
-        // near their waist, such as in a pant pocket,
-        // and walk steadily on flag ground.
-        walkingSteadiness = try await getHealthKitData(
-            identifier: .appleWalkingSteadiness
-            // Mark has data in this range.
-            // startDate: Date.from(year: 2022, month: 2, day: 1),
-            // endDate: Date.from(year: 2022, month: 6, day: 30)
-        ) { data in data.averageQuantity() }
-        // print("walkingSteadiness = \(walkingSteadiness)")
-
-        // Get average walking step length in inches per day.
-        walkingStepLength = try await getHealthKitData(
-            identifier: .walkingStepLength
-        ) { data in data.averageQuantity() }
-        // print("walkingStepLength = \(walkingStepLength)")
     }
 }

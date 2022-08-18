@@ -6,9 +6,13 @@ struct HeartChartView: View {
     // MARK: - State
 
     @State private var data: [DatedValue] = []
+    @State private var dateToValueMap: [String: Double] = [:]
 
     @State private var frequency: String = "Day"
+    @State private var interpolation: String = "monotone"
     @State private var metric = Metrics.shared.map[.heartRate]!
+    @State private var selectedDate = ""
+    @State private var selectedValue = 0.0
     @State private var timespan: String = "1 Week"
 
     @State private var lastFrequency: String = ""
@@ -23,6 +27,12 @@ struct HeartChartView: View {
         "Minute": .minute,
         "Hour": .hour,
         "Day": .day
+    ]
+
+    private let interpolationMap: [String: InterpolationMethod] = [
+        "monotone": .monotone,
+        "cardinal": .cardinal,
+        "catmullRom": .catmullRom // formulated by Edwin Catmull and Raphael Rom
     ]
 
     // MARK: - Properties
@@ -48,7 +58,6 @@ struct HeartChartView: View {
         return timespan == "1 Day" ? today.yesterday :
             timespan == "1 Week" ? today.daysAgo(7) :
             timespan == "1 Month" ? today.monthsAgo(1) :
-            //timespan == "3 Month" ? today.monthsAgo(3) :
             today
     }
 
@@ -59,7 +68,6 @@ struct HeartChartView: View {
                 .fontWeight(.bold)
             picker(
                 label: "Span",
-                // values: ["1 Day", "1 Week", "1 Month", "3 Months"],
                 values: ["1 Day", "1 Week", "1 Month"],
                 selected: $timespan
             )
@@ -67,6 +75,12 @@ struct HeartChartView: View {
                 label: "Frequency",
                 values: ["Minute", "Hour", "Day"],
                 selected: $frequency
+            )
+            Text("frequency = \(frequency)")
+            picker(
+                label: "Interpolation",
+                values: Array(interpolationMap.keys),
+                selected: $interpolation
             )
             HStack {
                 Text("Metric").fontWeight(.bold)
@@ -77,41 +91,54 @@ struct HeartChartView: View {
                 }
                 Spacer()
             }
-            Text("values go from \(minValue) to \(maxValue)")
+            //Text("values go from \(minValue) to \(maxValue)")
+            Text("\(selectedDate) value is \(selectedValue)")
             Chart(data) { heart in
                 LineMark(
                     x: .value("Date", heart.date),
-                    y: .value("BPM", heart.value)
+                    y: .value("Value", heart.value)
                 )
                 // Smooth the line.
-                // .interpolationMethod(.catmullRom)
-                // .interpolationMethod(.cardinal)
-                .interpolationMethod(.monotone)
+                .interpolationMethod(interpolationMap[interpolation]!)
             }
-            // TODO: How can you adjust the y axis min and max values?
-            // .chartYScale(range: 40 ... 200)
+            // Support tapping on the plot area to see data point details.
+            .chartOverlay { proxy in tapableOverlay(proxy: proxy) }
+            // Hide the x-axis and its labels.
+            // TODO: Can you only hide the labels?
+            .chartXAxis(.hidden)
+            // Change the y-axis to begin an minValue and end at maxValue.
+            .chartYScale(domain: minValue ... maxValue)
+            // Give the plot area a background color.
+            .chartPlotStyle { content in
+                content.background(Color(.secondarySystemBackground))
+            }
         }
         .padding()
         .task {
-            await HealthKitViewModel.shared.load()
+            await HealthKitViewModel.shared.requestPermission()
         }
     }
 
     // MARK: - Methods
 
     private func loadData() {
-        print("loadData entered")
         Task {
             do {
                 data = try await vm.getHealthKitData(
                     identifier: metric.identifier,
                     startDate: startDate,
-                    frequency: frequencyMap[frequency]
+                    frequency: frequencyMap[frequency]!
                 ) { data in
                     metric.option == .cumulativeSum ?
                         data.sumQuantity() :
                         data.averageQuantity()
                 }
+
+                dateToValueMap = [:]
+                for item in data {
+                    dateToValueMap[item.date] = item.value
+                }
+
                 lastMetric = metric
                 lastTimespan = timespan
                 lastFrequency = frequency
@@ -134,10 +161,19 @@ struct HeartChartView: View {
             .pickerStyle(.segmented)
         }
     }
-}
 
-struct HeartChartView_Previews: PreviewProvider {
-    static var previews: some View {
-        HeartChartView()
+    private func tapableOverlay(proxy: ChartProxy) -> some View {
+        GeometryReader { nthItem in
+            // Taps are not registered without using .contentShape.
+            Rectangle().fill(.clear).contentShape(Rectangle())
+                .onTapGesture { item in
+                    let x = item.x - nthItem[proxy.plotAreaFrame].origin.x
+                    let date: String? = proxy.value(atX: x)
+                    if let date {
+                        selectedDate = date
+                        selectedValue = dateToValueMap[date] ?? 0.0
+                    }
+                }
+        }
     }
 }
