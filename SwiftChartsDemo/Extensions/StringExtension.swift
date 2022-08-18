@@ -12,7 +12,7 @@ extension String: LocalizedError {
         return offset
     }
 
-    // Get substring starting at an index.
+    // Get character at an index.
     subscript(_ indexP: Int) -> String {
         get {
             let offset = getOffset(indexP)

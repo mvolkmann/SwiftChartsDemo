@@ -61,11 +61,39 @@ struct HeartChartView: View {
             today
     }
 
+    private var title: String {
+        var text = metric.identifier.rawValue
+
+        // Remove prefix.
+        let prefix = "HKQuantityTypeIdentifier"
+        if text.starts(with: prefix) {
+            text = text[prefix.count...]
+        }
+
+        // Add a space before all uppercase characters except the first.
+        var result = text[0]
+        for char in text.dropFirst() {
+            if char.isUppercase {
+                result += " "
+            }
+            result.append(char)
+        }
+
+        return result
+    }
+
     var body: some View {
         if changed { loadData() }
         return VStack {
-            Text("Heart Rate (\(vm.heartRate.count))")
-                .fontWeight(.bold)
+            HStack {
+                Text("Metric").fontWeight(.bold)
+                Picker("", selection: $metric) {
+                    ForEach(Metrics.shared.sorted) {
+                        Text($0.name).tag($0)
+                    }
+                }
+                Spacer()
+            }
             picker(
                 label: "Span",
                 values: ["1 Day", "1 Week", "1 Month"],
@@ -76,31 +104,25 @@ struct HeartChartView: View {
                 values: ["Minute", "Hour", "Day"],
                 selected: $frequency
             )
-            Text("frequency = \(frequency)")
             picker(
                 label: "Interpolation",
                 values: Array(interpolationMap.keys),
                 selected: $interpolation
             )
-            HStack {
-                Text("Metric").fontWeight(.bold)
-                Picker("", selection: $metric) {
-                    ForEach(Metrics.shared.sorted) {
-                        Text($0.name).tag($0)
-                    }
-                }
-                Spacer()
-            }
+
+            Text(title).fontWeight(.bold)
             //Text("values go from \(minValue) to \(maxValue)")
             Text("\(selectedDate) value is \(selectedValue)")
-            Chart(data) { heart in
+            Chart(data) { item in
                 LineMark(
-                    x: .value("Date", heart.date),
-                    y: .value("Value", heart.value)
+                    x: .value("Date", item.date),
+                    y: .value("Value", item.value)
                 )
+                .symbol(by: .value("Date", item.date))
                 // Smooth the line.
                 .interpolationMethod(interpolationMap[interpolation]!)
             }
+            .chartLegend(.hidden)
             // Support tapping on the plot area to see data point details.
             .chartOverlay { proxy in tapableOverlay(proxy: proxy) }
             // Hide the x-axis and its labels.
