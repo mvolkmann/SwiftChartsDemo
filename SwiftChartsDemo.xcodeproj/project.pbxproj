@@ -13,6 +13,7 @@
 		1A17BE47285964FC00B16F56 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A17BE46285964FC00B16F56 /* Preview Assets.xcassets */; };
 		1A17BE4E285A255A00B16F56 /* PlayerChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A17BE4D285A255A00B16F56 /* PlayerChartView.swift */; };
 		1A17BE50285A25C300B16F56 /* HeartChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A17BE4F285A25C300B16F56 /* HeartChartView.swift */; };
+		1A95877D28B12567007BE685 /* DragDetect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A95877C28B12567007BE685 /* DragDetect.swift */; };
 		1AC4B1DC28AC0A9200093F25 /* HealthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC4B1DB28AC0A9200093F25 /* HealthStore.swift */; };
 		1AC4B1DF28AC0AE900093F25 /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC4B1DE28AC0AE900093F25 /* DateExtension.swift */; };
 		1AC4B1E128AC0B4200093F25 /* Global.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC4B1E028AC0B4200093F25 /* Global.swift */; };
@@ -33,6 +34,7 @@
 		1A17BE46285964FC00B16F56 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		1A17BE4D285A255A00B16F56 /* PlayerChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerChartView.swift; sourceTree = "<group>"; };
 		1A17BE4F285A25C300B16F56 /* HeartChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartChartView.swift; sourceTree = "<group>"; };
+		1A95877C28B12567007BE685 /* DragDetect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragDetect.swift; sourceTree = "<group>"; };
 		1AC4B1DB28AC0A9200093F25 /* HealthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStore.swift; sourceTree = "<group>"; };
 		1AC4B1DE28AC0AE900093F25 /* DateExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateExtension.swift; sourceTree = "<group>"; };
 		1AC4B1E028AC0B4200093F25 /* Global.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Global.swift; sourceTree = "<group>"; };
@@ -79,6 +81,7 @@
 				1A17BE3F285964FB00B16F56 /* SwiftChartsDemoApp.swift */,
 				1AC4B1F228AC381200093F25 /* SwiftChartsDemo.entitlements */,
 				1AC4B1DB28AC0A9200093F25 /* HealthStore.swift */,
+				1A95877C28B12567007BE685 /* DragDetect.swift */,
 				1AC4B1E028AC0B4200093F25 /* Global.swift */,
 				1AC4B1DD28AC0AD100093F25 /* Extensions */,
 				1AC4B1E528AC0D9900093F25 /* Models */,
@@ -214,6 +217,7 @@
 				1AC4B1E728AC0DBE00093F25 /* SleepDay.swift in Sources */,
 				1A17BE40285964FB00B16F56 /* SwiftChartsDemoApp.swift in Sources */,
 				1AC4B1E428AC0D4100093F25 /* HealthKitViewModel.swift in Sources */,
+				1A95877D28B12567007BE685 /* DragDetect.swift in Sources */,
 				1AC4B1ED28AC0F3D00093F25 /* Metrics.swift in Sources */,
 				1AC4B1F128AC108500093F25 /* StringExtension.swift in Sources */,
 				1AC4B1EF28AC0F8200093F25 /* Sleep.swift in Sources */,

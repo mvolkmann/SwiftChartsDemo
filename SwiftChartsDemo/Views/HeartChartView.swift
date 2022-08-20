@@ -124,7 +124,7 @@ struct HeartChartView: View {
             }
             .chartLegend(.hidden)
             // Support tapping on the plot area to see data point details.
-            .chartOverlay { proxy in tapableOverlay(proxy: proxy) }
+            .chartOverlay { proxy in touchableOverlay(proxy: proxy) }
             // Hide the x-axis and its labels.
             // TODO: Can you only hide the labels?
             .chartXAxis(.hidden)
@@ -184,19 +184,20 @@ struct HeartChartView: View {
         }
     }
 
-    private func tapableOverlay(proxy: ChartProxy) -> some View {
+    private func touchableOverlay(proxy: ChartProxy) -> some View {
         GeometryReader { nthItem in
             // Taps are not registered without using .contentShape.
             Rectangle().fill(.clear).contentShape(Rectangle())
-                // TODO: Change this to recognize dragging onto a new Rectangle.
-                .onTapGesture { item in
-                    let x = item.x - nthItem[proxy.plotAreaFrame].origin.x
-                    let date: String? = proxy.value(atX: x)
-                    if let date {
-                        selectedDate = date
-                        selectedValue = dateToValueMap[date] ?? 0.0
+                .onDrag(
+                    onEnter: { point in
+                        let x = point.x - nthItem[proxy.plotAreaFrame].origin.x
+                        let date: String? = proxy.value(atX: x)
+                        if let date {
+                            selectedDate = date
+                            selectedValue = dateToValueMap[date] ?? 0.0
+                        }
                     }
-                }
+                )
         }
     }
 }
