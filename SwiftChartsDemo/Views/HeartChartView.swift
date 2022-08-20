@@ -8,7 +8,6 @@ struct HeartChartView: View {
     @State private var data: [DatedValue] = []
     @State private var dateToValueMap: [String: Double] = [:]
 
-    @State private var chartSize: CGSize = .zero
     @State private var frequency: String = "Day"
     @State private var interpolation: String = "monotone"
     @State private var metric = Metrics.shared.map[.heartRate]!
@@ -45,6 +44,47 @@ struct HeartChartView: View {
         timespan != lastTimespan
     }
 
+    private var chart: some View {
+        Chart(data) { datedValue in
+            LineMark(
+                x: .value("Date", datedValue.date),
+                y: .value("Value", datedValue.value)
+            )
+            // Smooth the line.
+            .interpolationMethod(interpolationMap[interpolation]!)
+            .symbol(by: .value("Date", datedValue.date))
+
+            if datedValue.date == selectedDate {
+                RuleMark(x: .value("Date", selectedDate))
+                    .annotation(position: .top) {
+                        VStack {
+                            Text(selectedDate)
+                            Text(String(format: "%0.2f", selectedValue))
+                        }
+                        .padding(5)
+                        .border(.red)
+                    }
+                    .foregroundStyle(.red)
+                    .lineStyle(.init(lineWidth: 1))
+                    // .lineStyle(.init(lineWidth: 1, dash: [10], dashPhase: 10))
+            }
+        }
+        .chartLegend(.hidden)
+        // Support tapping on the plot area to see data point details.
+        .chartOverlay { proxy in touchableOverlay(proxy: proxy) }
+        // Hide the x-axis and its labels.
+        // TODO: Can you only hide the labels?
+        .chartXAxis(.hidden)
+        // Change the y-axis to begin an minValue and end at maxValue.
+        .chartYScale(domain: minValue ... maxValue)
+        // Give the plot area a background color.
+        .chartPlotStyle { content in
+            content.background(Color(.secondarySystemBackground))
+        }
+        .padding(.leading, 20) // leaves room to left for RuleMark annotation
+        .padding(.top, 50) // leaves room above for RuleMark annotation
+    }
+
     private func lineMark(
         datedValue: DatedValue,
         showSymbols: Bool
@@ -61,10 +101,6 @@ struct HeartChartView: View {
         return mark.interpolationMethod(interpolationMap[interpolation]!)
     }
 
-    private var chart: some View {
-        GeometryReader(content: makeChart)
-    }
-
     private var maxValue: Double {
         let item = data.max { a, b in a.value < b.value }
         return item?.value ?? 0.0
@@ -73,17 +109,6 @@ struct HeartChartView: View {
     private var minValue: Double {
         let item = data.min { a, b in a.value < b.value }
         return item?.value ?? 0.0
-    }
-
-    private var path: some View {
-        Path() { path in
-            let x = selectedX - 20
-            path.move(to: CGPoint(x: x, y: 0.0))
-            path.addLine(
-                to: CGPoint(x: x, y: chartSize.height)
-            )
-        }
-        .stroke(.red, lineWidth: 1)
     }
 
     private var startDate: Date {
@@ -147,10 +172,7 @@ struct HeartChartView: View {
 
             // Text("values go from \(minValue) to \(maxValue)")
 
-            ZStack {
-                chart
-                if !selectedDate.isEmpty { path }
-            }
+            chart
         }
         .padding()
         .task {
@@ -185,51 +207,6 @@ struct HeartChartView: View {
                 print("error getting health data:", error)
             }
         }
-    }
-
-    private func makeChart(_ geometry: GeometryProxy) -> some View {
-        DispatchQueue.main.async {
-            chartSize = geometry.size
-        }
-
-        return Chart(data) { datedValue in
-            LineMark(
-                x: .value("Date", datedValue.date),
-                y: .value("Value", datedValue.value)
-            )
-            // Smooth the line.
-            .interpolationMethod(interpolationMap[interpolation]!)
-            .symbol(by: .value("Date", datedValue.date))
-
-            if datedValue.date == selectedDate {
-                RuleMark(x: .value("Date", selectedDate))
-                    .annotation(position: .top) {
-                        VStack {
-                            Text(selectedDate)
-                            Text(String(format: "%0.2f", selectedValue))
-                        }
-                        .padding(5)
-                        .border(.red)
-                    }
-                    .foregroundStyle(.red)
-                    .lineStyle(.init(lineWidth: 1))
-                    // .lineStyle(.init(lineWidth: 1, dash: [10], dashPhase: 10))
-            }
-        }
-        .chartLegend(.hidden)
-        // Support tapping on the plot area to see data point details.
-        .chartOverlay { proxy in touchableOverlay(proxy: proxy) }
-        // Hide the x-axis and its labels.
-        // TODO: Can you only hide the labels?
-        .chartXAxis(.hidden)
-        // Change the y-axis to begin an minValue and end at maxValue.
-        .chartYScale(domain: minValue ... maxValue)
-        // Give the plot area a background color.
-        .chartPlotStyle { content in
-            content.background(Color(.secondarySystemBackground))
-        }
-        .padding(.leading, 20) // leaves room to left for RuleMark annotation
-        .padding(.top, 50) // leaves room above for RuleMark annotation
     }
 
     private func picker(
