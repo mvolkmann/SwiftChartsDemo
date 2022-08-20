@@ -8,6 +8,7 @@ struct HeartChartView: View {
     @State private var data: [DatedValue] = []
     @State private var dateToValueMap: [String: Double] = [:]
 
+    @State private var chartSize: CGSize = .zero
     @State private var frequency: String = "Day"
     @State private var interpolation: String = "monotone"
     @State private var metric = Metrics.shared.map[.heartRate]!
@@ -62,44 +63,24 @@ struct HeartChartView: View {
     }
 
     private var chart: some View {
-        // let showSymbols = data.count <= 15
-        return Chart(data) { datedValue in
-            LineMark(
-                x: .value("Date", datedValue.date),
-                y: .value("Value", datedValue.value)
-            )
-            // Smooth the line.
-            .interpolationMethod(interpolationMap[interpolation]!)
-            .symbol(by: .value("Date", datedValue.date))
-        }
-        .chartLegend(.hidden)
-        // Support tapping on the plot area to see data point details.
-        .chartOverlay { proxy in touchableOverlay(proxy: proxy) }
-        // Hide the x-axis and its labels.
-        // TODO: Can you only hide the labels?
-        .chartXAxis(.hidden)
-        // Change the y-axis to begin an minValue and end at maxValue.
-        .chartYScale(domain: minValue ... maxValue)
-        // Give the plot area a background color.
-        .chartPlotStyle { content in
-            content.background(Color(.secondarySystemBackground))
-        }
+        GeometryReader(content: makeChart)
     }
 
     private var hoverRow: some View {
-        HStack(spacing: 0) {
-            Spacer().frame(width: max(0, selectedX - 70))
+        let height = 40.0
+        return HStack(spacing: 0) {
             VStack {
                 Text(selectedDate)
+                // Text("x = \(selectedX)")
                 Text(selectedDate.isEmpty ? "" :
                         String(format: "%.2f", selectedValue))
             }
-            .frame(height: 40)
+            .frame(height: height)
             .border(selectedDate.isEmpty ? .clear : .red)
-            if selectedX < 600 { Spacer() }
+            .position(x: max(47, 47 + max(0, selectedX - 70)), y: height - 12)
         }
         .fullWidth()
-        .border(.green)
+        .frame(height: height)
     }
 
     private var maxValue: Double {
@@ -110,6 +91,17 @@ struct HeartChartView: View {
     private var minValue: Double {
         let item = data.min { a, b in a.value < b.value }
         return item?.value ?? 0.0
+    }
+
+    private var path: some View {
+        Path() { path in
+            let x = selectedX - 20
+            path.move(to: CGPoint(x: x, y: 0.0))
+            path.addLine(
+                to: CGPoint(x: x, y: chartSize.height)
+            )
+        }
+        .stroke(.red, lineWidth: 1)
     }
 
     private var startDate: Date {
@@ -171,11 +163,14 @@ struct HeartChartView: View {
 
             Text(title).fontWeight(.bold)
 
-            //Text("values go from \(minValue) to \(maxValue)")
+            // Text("values go from \(minValue) to \(maxValue)")
 
             hoverRow
 
-            chart
+            ZStack {
+                chart
+                if !selectedDate.isEmpty { path }
+            }
         }
         .padding()
         .task {
@@ -212,6 +207,34 @@ struct HeartChartView: View {
         }
     }
 
+    private func makeChart(_ geometry: GeometryProxy) -> some View {
+        DispatchQueue.main.async {
+            chartSize = geometry.size
+        }
+
+        return Chart(data) { datedValue in
+            LineMark(
+                x: .value("Date", datedValue.date),
+                y: .value("Value", datedValue.value)
+            )
+            // Smooth the line.
+            .interpolationMethod(interpolationMap[interpolation]!)
+            .symbol(by: .value("Date", datedValue.date))
+        }
+        .chartLegend(.hidden)
+        // Support tapping on the plot area to see data point details.
+        .chartOverlay { proxy in touchableOverlay(proxy: proxy) }
+        // Hide the x-axis and its labels.
+        // TODO: Can you only hide the labels?
+        .chartXAxis(.hidden)
+        // Change the y-axis to begin an minValue and end at maxValue.
+        .chartYScale(domain: minValue ... maxValue)
+        // Give the plot area a background color.
+        .chartPlotStyle { content in
+            content.background(Color(.secondarySystemBackground))
+        }
+    }
+
     private func picker(
         label: String,
         values: [String],
@@ -228,11 +251,12 @@ struct HeartChartView: View {
 
     private func touchableOverlay(proxy: ChartProxy) -> some View {
         GeometryReader { nthItem in
+
             // Taps are not registered without using .contentShape.
             Rectangle().fill(.clear).contentShape(Rectangle())
                 .onDrag(
                     onEnter: { point in
-                        let x = point.x - nthItem[proxy.plotAreaFrame].origin.x
+                        let x = point.x - nthItem[proxy.plotAreaFrame].origin.x - 30
                         let date: String? = proxy.value(atX: x)
                         if let date {
                             selectedDate = date
