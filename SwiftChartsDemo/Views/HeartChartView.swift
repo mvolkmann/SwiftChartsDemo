@@ -45,7 +45,6 @@ struct HeartChartView: View {
         timespan != lastTimespan
     }
 
-    /* Couldn't get this to compile. */
     private func lineMark(
         datedValue: DatedValue,
         showSymbols: Bool
@@ -64,23 +63,6 @@ struct HeartChartView: View {
 
     private var chart: some View {
         GeometryReader(content: makeChart)
-    }
-
-    private var hoverRow: some View {
-        let height = 40.0
-        return HStack(spacing: 0) {
-            VStack {
-                Text(selectedDate)
-                // Text("x = \(selectedX)")
-                Text(selectedDate.isEmpty ? "" :
-                        String(format: "%.2f", selectedValue))
-            }
-            .frame(height: height)
-            .border(selectedDate.isEmpty ? .clear : .red)
-            .position(x: max(47, 47 + max(0, selectedX - 70)), y: height - 12)
-        }
-        .fullWidth()
-        .frame(height: height)
     }
 
     private var maxValue: Double {
@@ -165,8 +147,6 @@ struct HeartChartView: View {
 
             // Text("values go from \(minValue) to \(maxValue)")
 
-            hoverRow
-
             ZStack {
                 chart
                 if !selectedDate.isEmpty { path }
@@ -220,6 +200,21 @@ struct HeartChartView: View {
             // Smooth the line.
             .interpolationMethod(interpolationMap[interpolation]!)
             .symbol(by: .value("Date", datedValue.date))
+
+            if datedValue.date == selectedDate {
+                RuleMark(x: .value("Date", selectedDate))
+                    .annotation(position: .top) {
+                        VStack {
+                            Text(selectedDate)
+                            Text(String(format: "%0.2f", selectedValue))
+                        }
+                        .padding(5)
+                        .border(.red)
+                    }
+                    .foregroundStyle(.red)
+                    .lineStyle(.init(lineWidth: 1))
+                    // .lineStyle(.init(lineWidth: 1, dash: [10], dashPhase: 10))
+            }
         }
         .chartLegend(.hidden)
         // Support tapping on the plot area to see data point details.
@@ -233,6 +228,8 @@ struct HeartChartView: View {
         .chartPlotStyle { content in
             content.background(Color(.secondarySystemBackground))
         }
+        .padding(.leading, 20) // leaves room to left for RuleMark annotation
+        .padding(.top, 50) // leaves room above for RuleMark annotation
     }
 
     private func picker(
@@ -250,21 +247,20 @@ struct HeartChartView: View {
     }
 
     private func touchableOverlay(proxy: ChartProxy) -> some View {
-        GeometryReader { nthItem in
-
-            // Taps are not registered without using .contentShape.
-            Rectangle().fill(.clear).contentShape(Rectangle())
-                .onDrag(
-                    onEnter: { point in
-                        let x = point.x - nthItem[proxy.plotAreaFrame].origin.x - 30
-                        let date: String? = proxy.value(atX: x)
-                        if let date {
-                            selectedDate = date
-                            selectedValue = dateToValueMap[date] ?? 0.0
-                            selectedX = point.x
+        GeometryReader { innerProxy in
+            Rectangle()
+                .fill(.clear)
+                .contentShape(Rectangle())
+                .gesture(
+                    DragGesture()
+                        .onChanged { value in
+                            let location = value.location
+                            if let date: String = proxy.value(atX: location.x) {
+                                selectedDate = date
+                                selectedValue = dateToValueMap[date] ?? 0.0
+                            }
                         }
-                    },
-                    onExit: { selectedDate = "" }
+                        .onEnded { _ in selectedDate = "" }
                 )
         }
     }
