@@ -63,16 +63,18 @@ struct HeartChartView: View {
                             Text(String(format: "%0.2f", selectedValue))
                         }
                         .padding(5)
-                        .border(.red)
+                        .background {
+                            RoundedRectangle(cornerRadius: 5, style: .continuous)
+                                .fill(.white.shadow(.drop(radius: 3)))
+                        }
                     }
                     .foregroundStyle(.red)
-                    .lineStyle(.init(lineWidth: 1))
-                    // .lineStyle(.init(lineWidth: 1, dash: [10], dashPhase: 10))
+                    .lineStyle(.init(lineWidth: 1, dash: [10], dashPhase: 5))
             }
         }
         .chartLegend(.hidden)
         // Support tapping on the plot area to see data point details.
-        .chartOverlay { proxy in touchableOverlay(proxy: proxy) }
+        .chartOverlay { proxy in chartOverlay(proxy: proxy) }
         // Hide the x-axis and its labels.
         // TODO: Can you only hide the labels?
         .chartXAxis(.hidden)
@@ -167,6 +169,28 @@ struct HeartChartView: View {
 
     // MARK: - Methods
 
+    private func chartOverlay(proxy: ChartProxy) -> some View {
+        GeometryReader { innerProxy in
+            Rectangle()
+                .fill(.clear)
+                .contentShape(Rectangle())
+                .gesture(
+                    DragGesture()
+                        .onChanged { value in
+                            let location = value.location
+                            if let date: String = proxy.value(atX: location.x) {
+                                selectedDate = date
+                                selectedValue = dateToValueMap[date] ?? 0.0
+                            }
+                        }
+                        .onEnded { _ in selectedDate = "" }
+                )
+        }
+    }
+
+    // This is not used yet.
+    // I wanted to be able to turn off symbols
+    // when there is a large number of data points.
     private func lineMark(
         datedValue: DatedValue,
         showSymbols: Bool
@@ -221,25 +245,6 @@ struct HeartChartView: View {
                 ForEach(values, id: \.self) { Text($0) }
             }
             .pickerStyle(.segmented)
-        }
-    }
-
-    private func touchableOverlay(proxy: ChartProxy) -> some View {
-        GeometryReader { innerProxy in
-            Rectangle()
-                .fill(.clear)
-                .contentShape(Rectangle())
-                .gesture(
-                    DragGesture()
-                        .onChanged { value in
-                            let location = value.location
-                            if let date: String = proxy.value(atX: location.x) {
-                                selectedDate = date
-                                selectedValue = dateToValueMap[date] ?? 0.0
-                            }
-                        }
-                        .onEnded { _ in selectedDate = "" }
-                )
         }
     }
 }
