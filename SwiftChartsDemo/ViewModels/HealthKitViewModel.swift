@@ -201,7 +201,7 @@ final class HealthKitViewModel: ObservableObject {
             let quantity = quantityFunction(data)
             let value = quantity?.doubleValue(for: metric.unit) ?? 0
             return DatedValue(
-                date: frequencyToUse == .day ? date.ymd : date.ymdhms,
+                date: frequencyToUse == .day ? date.ymd : date.ymdh,
                 ms: date.milliseconds,
                 unit: metric.unit.unitString,
                 value: value
