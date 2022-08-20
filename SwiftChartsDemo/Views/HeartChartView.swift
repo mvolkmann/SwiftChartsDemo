@@ -46,6 +46,7 @@ struct HeartChartView: View {
 
     private var chart: some View {
         Chart(data) { datedValue in
+            // lineMark(datedValue: datedValue, showSymbols: true)
             LineMark(
                 x: .value("Date", datedValue.date),
                 y: .value("Value", datedValue.value)
@@ -83,22 +84,6 @@ struct HeartChartView: View {
         }
         .padding(.leading, 20) // leaves room to left for RuleMark annotation
         .padding(.top, 50) // leaves room above for RuleMark annotation
-    }
-
-    private func lineMark(
-        datedValue: DatedValue,
-        showSymbols: Bool
-    ) -> any ChartContent {
-        let date = datedValue.date
-        var mark: any ChartContent = LineMark(
-            x: .value("Date", date),
-            y: .value("Value", datedValue.value)
-        )
-        if showSymbols {
-            mark = mark.symbol(by: .value("Date", date))
-        }
-        // Smooth the line.
-        return mark.interpolationMethod(interpolationMap[interpolation]!)
     }
 
     private var maxValue: Double {
@@ -181,6 +166,22 @@ struct HeartChartView: View {
     }
 
     // MARK: - Methods
+
+    private func lineMark(
+        datedValue: DatedValue,
+        showSymbols: Bool
+    ) -> any ChartContent {
+        let date = datedValue.date
+        var mark: any ChartContent = LineMark(
+            x: .value("Date", date),
+            y: .value("Value", datedValue.value)
+        )
+        if showSymbols {
+            mark = mark.symbol(by: .value("Date", date))
+        }
+        // Smooth the line.
+        return mark.interpolationMethod(interpolationMap[interpolation]!)
+    }
 
     private func loadData() {
         Task {
