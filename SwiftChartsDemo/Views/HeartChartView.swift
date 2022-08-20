@@ -13,6 +13,7 @@ struct HeartChartView: View {
     @State private var metric = Metrics.shared.map[.heartRate]!
     @State private var selectedDate = ""
     @State private var selectedValue = 0.0
+    @State private var selectedX = 0.0
     @State private var timespan: String = "1 Week"
 
     @State private var lastFrequency: String = ""
@@ -41,6 +42,62 @@ struct HeartChartView: View {
         metric != lastMetric ||
         frequency != lastFrequency ||
         timespan != lastTimespan
+    }
+
+    /* Couldn't get this to compile. */
+    private func lineMark(
+        datedValue: DatedValue,
+        showSymbols: Bool
+    ) -> any ChartContent {
+        let date = datedValue.date
+        var mark: any ChartContent = LineMark(
+            x: .value("Date", date),
+            y: .value("Value", datedValue.value)
+        )
+        if showSymbols {
+            mark = mark.symbol(by: .value("Date", date))
+        }
+        // Smooth the line.
+        return mark.interpolationMethod(interpolationMap[interpolation]!)
+    }
+
+    private var chart: some View {
+        // let showSymbols = data.count <= 15
+        return Chart(data) { datedValue in
+            LineMark(
+                x: .value("Date", datedValue.date),
+                y: .value("Value", datedValue.value)
+            )
+            // Smooth the line.
+            .interpolationMethod(interpolationMap[interpolation]!)
+            .symbol(by: .value("Date", datedValue.date))
+        }
+        .chartLegend(.hidden)
+        // Support tapping on the plot area to see data point details.
+        .chartOverlay { proxy in touchableOverlay(proxy: proxy) }
+        // Hide the x-axis and its labels.
+        // TODO: Can you only hide the labels?
+        .chartXAxis(.hidden)
+        // Change the y-axis to begin an minValue and end at maxValue.
+        .chartYScale(domain: minValue ... maxValue)
+        // Give the plot area a background color.
+        .chartPlotStyle { content in
+            content.background(Color(.secondarySystemBackground))
+        }
+    }
+
+    private var hoverRow: some View {
+        HStack {
+            Spacer().frame(width: max(0, selectedX - 70))
+            VStack {
+                Text(selectedDate)
+                Text(selectedDate.isEmpty ? "" :
+                        String(format: "%.2f", selectedValue))
+            }
+            .frame(height: 40)
+            .border(selectedDate.isEmpty ? .clear : .red)
+            Spacer()
+        }
     }
 
     private var maxValue: Double {
@@ -111,29 +168,12 @@ struct HeartChartView: View {
             )
 
             Text(title).fontWeight(.bold)
+
             //Text("values go from \(minValue) to \(maxValue)")
-            Text("\(selectedDate) value is \(selectedValue)")
-            Chart(data) { item in
-                LineMark(
-                    x: .value("Date", item.date),
-                    y: .value("Value", item.value)
-                )
-                .symbol(by: .value("Date", item.date))
-                // Smooth the line.
-                .interpolationMethod(interpolationMap[interpolation]!)
-            }
-            .chartLegend(.hidden)
-            // Support tapping on the plot area to see data point details.
-            .chartOverlay { proxy in touchableOverlay(proxy: proxy) }
-            // Hide the x-axis and its labels.
-            // TODO: Can you only hide the labels?
-            .chartXAxis(.hidden)
-            // Change the y-axis to begin an minValue and end at maxValue.
-            .chartYScale(domain: minValue ... maxValue)
-            // Give the plot area a background color.
-            .chartPlotStyle { content in
-                content.background(Color(.secondarySystemBackground))
-            }
+
+            hoverRow
+
+            chart
         }
         .padding()
         .task {
@@ -195,7 +235,11 @@ struct HeartChartView: View {
                         if let date {
                             selectedDate = date
                             selectedValue = dateToValueMap[date] ?? 0.0
+                            selectedX = point.x
                         }
+                    },
+                    onExit: { point in
+                        selectedDate = ""
                     }
                 )
         }
