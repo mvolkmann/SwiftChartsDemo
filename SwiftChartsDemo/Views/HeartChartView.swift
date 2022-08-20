@@ -98,6 +98,7 @@ struct HeartChartView: View {
             .border(selectedDate.isEmpty ? .clear : .red)
             Spacer()
         }
+        .border(.green)
     }
 
     private var maxValue: Double {
@@ -238,9 +239,7 @@ struct HeartChartView: View {
                             selectedX = point.x
                         }
                     },
-                    onExit: { point in
-                        selectedDate = ""
-                    }
+                    onExit: { selectedDate = "" }
                 )
         }
     }

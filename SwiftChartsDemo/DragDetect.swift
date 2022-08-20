@@ -5,7 +5,7 @@ struct DragWatcher: ViewModifier {
     @State private var didEnter = false
 
     let onEnter: ((CGPoint) -> Void)?
-    let onExit: ((CGPoint) -> Void)?
+    let onExit: (() -> Void)?
 
     func body(content: Content) -> some View {
         content
@@ -29,7 +29,7 @@ struct DragWatcher: ViewModifier {
         } else if didEnter {
             DispatchQueue.main.async {
                 didEnter = false
-                onExit?(dragLocation)
+                onExit?()
             }
         }
         return Color.clear
@@ -39,7 +39,7 @@ struct DragWatcher: ViewModifier {
 extension View {
     func onDrag(
         onEnter: ((CGPoint) -> Void)? = nil,
-        onExit: ((CGPoint) -> Void)? = nil
+        onExit: (() -> Void)? = nil
     ) -> some View {
         self.modifier(DragWatcher(onEnter: onEnter, onExit: onExit))
     }
