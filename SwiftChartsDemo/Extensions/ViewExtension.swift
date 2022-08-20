@@ -1,6 +1,10 @@
 import SwiftUI
 
 extension View {
+    func fullWidth() -> some View {
+        frame(maxWidth: .infinity)
+    }
+
     /// Supports conditional view modifiers.
     /// For example, .if(price > 100) { view in view.background(.orange) }
     /// The concrete type of Content can be any type

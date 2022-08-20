@@ -87,7 +87,7 @@ struct HeartChartView: View {
     }
 
     private var hoverRow: some View {
-        HStack {
+        HStack(spacing: 0) {
             Spacer().frame(width: max(0, selectedX - 70))
             VStack {
                 Text(selectedDate)
@@ -96,8 +96,9 @@ struct HeartChartView: View {
             }
             .frame(height: 40)
             .border(selectedDate.isEmpty ? .clear : .red)
-            Spacer()
+            if selectedX < 600 { Spacer() }
         }
+        .fullWidth()
         .border(.green)
     }
 
