@@ -2,26 +2,46 @@ import Charts
 import HealthKit
 import SwiftUI
 
+// Much of this code was inspired by the Kavsoft YouTube video at
+// https://www.youtube.com/watch?v=xS-fGYDD0qk.
 struct HeartChartView: View {
     // MARK: - State
 
+    @State private var chartType = "Line"
     @State private var data: [DatedValue] = []
     @State private var dateToValueMap: [String: Double] = [:]
-
-    @State private var chartType = "Line"
     @State private var frequency: Frequency = .day
     @State private var metric = Metrics.shared.map[.heartRate]!
     @State private var selectedDate = ""
     @State private var selectedValue = 0.0
-    @State private var selectedX = 0.0
-    @State private var timespan = "1 Week"
+    @State private var timeSpan = "1 Week"
 
     @StateObject var vm = HealthKitViewModel.shared
 
+    // MARK: - Constants
+
+    // This is used to smooth line charts.
+    // The options are .monotone, .cardinal, and
+    // .catmullRom (formulated by Edwin Catmull and Raphael Rom).
+    let interpolationMethod: InterpolationMethod = .catmullRom
+
     // MARK: - Properties
+
+    private var annotation: some View {
+        VStack {
+            Text(selectedDate)
+            Text(String(format: "%0.2f", selectedValue))
+        }
+        .padding(5)
+        .background {
+            RoundedRectangle(cornerRadius: 5, style: .continuous)
+                .fill(.white.shadow(.drop(radius: 3)))
+        }
+    }
 
     private var chart: some View {
         Chart(data) { datedValue in
+            // TODO: Select number of decimal places to display based on metric.
             let value = datedValue.animate ? datedValue.value : 0
             if chartType == "Bar" {
                 BarMark(
@@ -30,14 +50,11 @@ struct HeartChartView: View {
                 )
                 .foregroundStyle(.blue.gradient)
             } else {
-                // lineMark(datedValue: datedValue, showSymbols: true)
                 LineMark(
                     x: .value("Date", datedValue.date),
                     y: .value("Value", value)
                 )
-                // Smooth the line.  Options are .monotone, .cardinal, and
-                // .catmullRom (formulated by Edwin Catmull and Raphael Rom)
-                .interpolationMethod(.catmullRom)
+                .interpolationMethod(interpolationMethod)
                 .symbol(by: .value("Date", datedValue.date))
 
                 AreaMark(
@@ -45,27 +62,18 @@ struct HeartChartView: View {
                     y: .value("Value", value)
                 )
                 .foregroundStyle(.blue.opacity(0.2))
-                .interpolationMethod(.catmullRom)
+                .interpolationMethod(interpolationMethod)
             }
 
             if datedValue.date == selectedDate {
                 RuleMark(x: .value("Date", selectedDate))
-                    .annotation(position: .top) {
-                        VStack {
-                            Text(selectedDate)
-                            Text(String(format: "%0.2f", selectedValue))
-                        }
-                        .padding(5)
-                        .background {
-                            RoundedRectangle(cornerRadius: 5, style: .continuous)
-                                .fill(.white.shadow(.drop(radius: 3)))
-                        }
-                    }
+                    .annotation(position: .top) { annotation }
                     .foregroundStyle(.red)
                     .lineStyle(.init(lineWidth: 1, dash: [10], dashPhase: 5))
             }
         }
         .onAppear { animateGraph() }
+
         .chartLegend(.hidden)
 
         // Support tapping on the plot area to see data point details.
@@ -89,9 +97,44 @@ struct HeartChartView: View {
         .padding(.top, 50) // leaves room above for RuleMark annotation
     }
 
+    private var chartTypePicker: some View {
+        picker(
+            label: "Chart Type",
+            values: ["Bar", "Line"],
+            selected: $chartType
+        )
+        .onChange(of: chartType) { _ in
+            // Make a copy of data where animate is false in each item.
+            // This allows the new chart to be animated.
+            data = data.map { item in
+                DatedValue(
+                    date: item.date,
+                    ms: item.ms,
+                    unit: item.unit,
+                    value: item.value
+                )
+            }
+
+            animateGraph()
+        }
+    }
+
     private var maxValue: Double {
         let item = data.max { a, b in a.value < b.value }
         return item?.value ?? 0.0
+    }
+
+    private var metricPicker: some View {
+        HStack {
+            Text("Metric").fontWeight(.bold)
+            Picker("", selection: $metric) {
+                ForEach(Metrics.shared.sorted) {
+                    Text($0.name).tag($0)
+                }
+            }
+            Spacer()
+        }
+        .onChange(of: metric) { _ in loadData() }
     }
 
     private var minValue: Double {
@@ -101,16 +144,29 @@ struct HeartChartView: View {
 
     private var startDate: Date {
         let today = Date().withoutTime
-        return timespan == "1 Day" ? today.yesterday :
-            timespan == "1 Week" ? today.daysAgo(7) :
-            timespan == "1 Month" ? today.monthsAgo(1) :
+        return timeSpan == "1 Day" ? today.yesterday :
+            timeSpan == "1 Week" ? today.daysAgo(7) :
+            timeSpan == "1 Month" ? today.monthsAgo(1) :
             today
+    }
+
+    private var timeSpanPicker: some View {
+        // TODO: No chart will render if "1 Day" is selected
+        // TODO: and we do not have hourly data for selected metric.
+        // TODO: In that case either don't allow selecting "1 Day"
+        // TODO: OR gather hourly data for all metrics.
+        picker(
+            label: "Time Span",
+            values: ["1 Day", "1 Week", "1 Month"],
+            selected: $timeSpan
+        )
+        .onChange(of: timeSpan) { _ in updateTimeSpan() }
     }
 
     private var title: String {
         var text = metric.identifier.rawValue
 
-        // Remove prefix.
+        // Remove metric prefix.
         let prefix = "HKQuantityTypeIdentifier"
         if text.starts(with: prefix) {
             text = text[prefix.count...]
@@ -119,9 +175,7 @@ struct HeartChartView: View {
         // Add a space before all uppercase characters except the first.
         var result = text[0]
         for char in text.dropFirst() {
-            if char.isUppercase {
-                result += " "
-            }
+            if char.isUppercase { result += " " }
             result.append(char)
         }
 
@@ -130,60 +184,12 @@ struct HeartChartView: View {
 
     var body: some View {
         VStack {
-            HStack {
-                Text("Metric").fontWeight(.bold)
-                Picker("", selection: $metric) {
-                    ForEach(Metrics.shared.sorted) {
-                        Text($0.name).tag($0)
-                    }
-                }
-                Spacer()
-            }
-            picker(
-                label: "Span",
-                values: ["1 Day", "1 Week", "1 Month"],
-                selected: $timespan
-            )
-            .onChange(of: chartType) { _ in
-                // Make a copy of data where animate is false in each item.
-                data = data.map { item in
-                    DatedValue(
-                        date: item.date,
-                        ms: item.ms,
-                        unit: item.unit,
-                        value: item.value
-                    )
-                }
-
-                animateGraph()
-            }
-            .onChange(of: metric) { _ in loadData() }
-            .onChange(of: timespan) { _ in
-                switch timespan {
-                case "1 Day":
-                    frequency = .hour
-                case "1 Week":
-                    frequency = .day
-                case "1 Month":
-                    frequency = .day
-                default:
-                    break
-                }
-
-                loadData()
-            }
-            picker(
-                label: "Chart Type",
-                values: ["Bar", "Line"],
-                selected: $chartType
-            )
-
+            metricPicker
+            timeSpanPicker
+            chartTypePicker
             Text(title).fontWeight(.bold)
-
             // Text("values go from \(minValue) to \(maxValue)")
-
             chart
-
             Spacer()
         }
         .onAppear(perform: loadData)
@@ -195,15 +201,13 @@ struct HeartChartView: View {
 
     // MARK: - Methods
 
-    private func animateGraph(fromChange: Bool = false) {
-        print("in animateGraph")
+    private func animateGraph() {
         for (index, _) in data.enumerated() {
             // Delay rendering each data point a bit longer than the previous one.
             DispatchQueue.main.asyncAfter(
-                //deadline: .now() + Double(index) * (fromChange ? 0.03 : 0.05)
-                deadline: .now() + Double(index) * 0.03
+                deadline: .now() + Double(index) * 0.015
             ) {
-                let spring = 0.8
+                let spring = 0.5
                 withAnimation(.interactiveSpring(
                     response: spring,
                     dampingFraction: spring,
@@ -253,7 +257,7 @@ struct HeartChartView: View {
                     dateToValueMap[item.date] = item.value
                 }
 
-                animateGraph(fromChange: true)
+                animateGraph()
             } catch {
                 print("error getting health data:", error)
             }
@@ -272,5 +276,20 @@ struct HeartChartView: View {
             }
             .pickerStyle(.segmented)
         }
+    }
+
+    private func updateTimeSpan() {
+        switch timeSpan {
+        case "1 Day":
+            frequency = .hour
+        case "1 Week":
+            frequency = .day
+        case "1 Month":
+            frequency = .day
+        default:
+            break
+        }
+
+        loadData()
     }
 }
