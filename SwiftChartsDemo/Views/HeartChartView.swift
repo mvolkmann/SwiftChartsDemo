@@ -8,52 +8,45 @@ struct HeartChartView: View {
     @State private var data: [DatedValue] = []
     @State private var dateToValueMap: [String: Double] = [:]
 
-    @State private var frequency: String = "Day"
-    @State private var interpolation: String = "monotone"
+    @State private var chartType = "Line"
+    @State private var frequency: Frequency = .day
     @State private var metric = Metrics.shared.map[.heartRate]!
     @State private var selectedDate = ""
     @State private var selectedValue = 0.0
     @State private var selectedX = 0.0
-    @State private var timespan: String = "1 Week"
-
-    @State private var lastFrequency: String = ""
-    @State private var lastMetric = Metrics.shared.map[.appleWalkingSteadiness]!
-    @State private var lastTimespan: String = ""
+    @State private var timespan = "1 Week"
 
     @StateObject var vm = HealthKitViewModel.shared
 
-    // MARK: - Constants
-
-    private let frequencyMap: [String: Frequency] = [
-        "Minute": .minute,
-        "Hour": .hour,
-        "Day": .day
-    ]
-
-    private let interpolationMap: [String: InterpolationMethod] = [
-        "monotone": .monotone,
-        "cardinal": .cardinal,
-        "catmullRom": .catmullRom // formulated by Edwin Catmull and Raphael Rom
-    ]
-
     // MARK: - Properties
-
-    private var changed: Bool {
-        metric != lastMetric ||
-        frequency != lastFrequency ||
-        timespan != lastTimespan
-    }
 
     private var chart: some View {
         Chart(data) { datedValue in
-            // lineMark(datedValue: datedValue, showSymbols: true)
-            LineMark(
-                x: .value("Date", datedValue.date),
-                y: .value("Value", datedValue.value)
-            )
-            // Smooth the line.
-            .interpolationMethod(interpolationMap[interpolation]!)
-            .symbol(by: .value("Date", datedValue.date))
+            let value = datedValue.animate ? datedValue.value : 0
+            if chartType == "Bar" {
+                BarMark(
+                    x: .value("Date", datedValue.date),
+                    y: .value("Value", value)
+                )
+                .foregroundStyle(.blue.gradient)
+            } else {
+                // lineMark(datedValue: datedValue, showSymbols: true)
+                LineMark(
+                    x: .value("Date", datedValue.date),
+                    y: .value("Value", value)
+                )
+                // Smooth the line.  Options are .monotone, .cardinal, and
+                // .catmullRom (formulated by Edwin Catmull and Raphael Rom)
+                .interpolationMethod(.catmullRom)
+                .symbol(by: .value("Date", datedValue.date))
+
+                AreaMark(
+                    x: .value("Date", datedValue.date),
+                    y: .value("Value", value)
+                )
+                .foregroundStyle(.blue.opacity(0.2))
+                .interpolationMethod(.catmullRom)
+            }
 
             if datedValue.date == selectedDate {
                 RuleMark(x: .value("Date", selectedDate))
@@ -72,18 +65,26 @@ struct HeartChartView: View {
                     .lineStyle(.init(lineWidth: 1, dash: [10], dashPhase: 5))
             }
         }
+        .onAppear { animateGraph() }
         .chartLegend(.hidden)
+
         // Support tapping on the plot area to see data point details.
         .chartOverlay { proxy in chartOverlay(proxy: proxy) }
+
         // Hide the x-axis and its labels.
         // TODO: Can you only hide the labels?
         .chartXAxis(.hidden)
+
         // Change the y-axis to begin an minValue and end at maxValue.
-        .chartYScale(domain: minValue ... maxValue)
+        // This breaks the ability to set the chart height below.
+        // .chartYScale(domain: minValue ... maxValue)
+
         // Give the plot area a background color.
         .chartPlotStyle { content in
             content.background(Color(.secondarySystemBackground))
         }
+
+        .frame(height: 400)
         .padding(.leading, 20) // leaves room to left for RuleMark annotation
         .padding(.top, 50) // leaves room above for RuleMark annotation
     }
@@ -128,8 +129,7 @@ struct HeartChartView: View {
     }
 
     var body: some View {
-        if changed { loadData() }
-        return VStack {
+        VStack {
             HStack {
                 Text("Metric").fontWeight(.bold)
                 Picker("", selection: $metric) {
@@ -144,15 +144,38 @@ struct HeartChartView: View {
                 values: ["1 Day", "1 Week", "1 Month"],
                 selected: $timespan
             )
+            .onChange(of: chartType) { _ in
+                // Make a copy of data where animate is false in each item.
+                data = data.map { item in
+                    DatedValue(
+                        date: item.date,
+                        ms: item.ms,
+                        unit: item.unit,
+                        value: item.value
+                    )
+                }
+
+                animateGraph()
+            }
+            .onChange(of: metric) { _ in loadData() }
+            .onChange(of: timespan) { _ in
+                switch timespan {
+                case "1 Day":
+                    frequency = .hour
+                case "1 Week":
+                    frequency = .day
+                case "1 Month":
+                    frequency = .day
+                default:
+                    break
+                }
+
+                loadData()
+            }
             picker(
-                label: "Frequency",
-                values: ["Minute", "Hour", "Day"],
-                selected: $frequency
-            )
-            picker(
-                label: "Interpolation",
-                values: Array(interpolationMap.keys),
-                selected: $interpolation
+                label: "Chart Type",
+                values: ["Bar", "Line"],
+                selected: $chartType
             )
 
             Text(title).fontWeight(.bold)
@@ -160,7 +183,10 @@ struct HeartChartView: View {
             // Text("values go from \(minValue) to \(maxValue)")
 
             chart
+
+            Spacer()
         }
+        .onAppear(perform: loadData)
         .padding()
         .task {
             await HealthKitViewModel.shared.requestPermission()
@@ -168,6 +194,26 @@ struct HeartChartView: View {
     }
 
     // MARK: - Methods
+
+    private func animateGraph(fromChange: Bool = false) {
+        print("in animateGraph")
+        for (index, _) in data.enumerated() {
+            // Delay rendering each data point a bit longer than the previous one.
+            DispatchQueue.main.asyncAfter(
+                //deadline: .now() + Double(index) * (fromChange ? 0.03 : 0.05)
+                deadline: .now() + Double(index) * 0.03
+            ) {
+                let spring = 0.8
+                withAnimation(.interactiveSpring(
+                    response: spring,
+                    dampingFraction: spring,
+                    blendDuration: spring
+                )) {
+                    data[index].animate = true
+                }
+            }
+        }
+    }
 
     private func chartOverlay(proxy: ChartProxy) -> some View {
         GeometryReader { innerProxy in
@@ -188,46 +234,26 @@ struct HeartChartView: View {
         }
     }
 
-    // This is not used yet.
-    // I wanted to be able to turn off symbols
-    // when there is a large number of data points.
-    private func lineMark(
-        datedValue: DatedValue,
-        showSymbols: Bool
-    ) -> any ChartContent {
-        let date = datedValue.date
-        var mark: any ChartContent = LineMark(
-            x: .value("Date", date),
-            y: .value("Value", datedValue.value)
-        )
-        if showSymbols {
-            mark = mark.symbol(by: .value("Date", date))
-        }
-        // Smooth the line.
-        return mark.interpolationMethod(interpolationMap[interpolation]!)
-    }
-
     private func loadData() {
         Task {
             do {
                 data = try await vm.getHealthKitData(
                     identifier: metric.identifier,
                     startDate: startDate,
-                    frequency: frequencyMap[frequency]!
+                    frequency: frequency
                 ) { data in
                     metric.option == .cumulativeSum ?
                         data.sumQuantity() :
                         data.averageQuantity()
                 }
+                // All objects in data will now have animate set to false.
 
                 dateToValueMap = [:]
                 for item in data {
                     dateToValueMap[item.date] = item.value
                 }
 
-                lastMetric = metric
-                lastTimespan = timespan
-                lastFrequency = frequency
+                animateGraph(fromChange: true)
             } catch {
                 print("error getting health data:", error)
             }
