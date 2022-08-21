@@ -180,10 +180,6 @@ struct HeartChartView: View {
     }
 
     private var timeSpanPicker: some View {
-        // TODO: No chart will render if "1 Day" is selected
-        // TODO: and we do not have hourly data for selected metric.
-        // TODO: In that case either don't allow selecting "1 Day"
-        // TODO: OR gather hourly data for all metrics.
         picker(
             label: "Time Span",
             values: ["1 Day", "1 Week", "1 Month"],
