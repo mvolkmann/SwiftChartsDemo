@@ -160,7 +160,20 @@ struct HeartChartView: View {
             values: ["1 Day", "1 Week", "1 Month"],
             selected: $timeSpan
         )
-        .onChange(of: timeSpan) { _ in updateTimeSpan() }
+        .onChange(of: timeSpan) { _ in
+            switch timeSpan {
+            case "1 Day":
+                frequency = .hour
+            case "1 Week":
+                frequency = .day
+            case "1 Month":
+                frequency = .day
+            default:
+                break
+            }
+
+            loadData()
+        }
     }
 
     private var title: String {
@@ -276,20 +289,5 @@ struct HeartChartView: View {
             }
             .pickerStyle(.segmented)
         }
-    }
-
-    private func updateTimeSpan() {
-        switch timeSpan {
-        case "1 Day":
-            frequency = .hour
-        case "1 Week":
-            frequency = .day
-        case "1 Month":
-            frequency = .day
-        default:
-            break
-        }
-
-        loadData()
     }
 }
