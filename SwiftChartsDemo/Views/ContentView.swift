@@ -6,6 +6,7 @@ struct ContentView: View {
         VStack {
             HeartChartView()
         }
+        // .background(.yellow)
     }
 }
 
