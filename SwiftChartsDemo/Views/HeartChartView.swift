@@ -7,6 +7,8 @@ import SwiftUI
 struct HeartChartView: View {
     // MARK: - State
 
+    @Environment(\.colorScheme) var colorScheme
+
     @State private var chartType = "Line"
     @State private var data: [DatedValue] = []
     @State private var dateToValueMap: [String: Double] = [:]
@@ -35,9 +37,13 @@ struct HeartChartView: View {
         }
         .padding(5)
         .background {
+            let fillColor: Color = colorScheme == .light ?
+                .white : Color(.secondarySystemBackground)
+            let myFill = fillColor.shadow(.drop(radius: 3))
             RoundedRectangle(cornerRadius: 5, style: .continuous)
-                .fill(.white.shadow(.drop(radius: 3)))
+                .fill(myFill)
         }
+        .foregroundColor(Color(.label))
     }
 
     private var chart: some View {
@@ -92,7 +98,7 @@ struct HeartChartView: View {
 
         // Leave room for RuleMark annotations.
         .padding(.horizontal, 20)
-        .padding(.top, 50)
+        .padding(.top, 55)
 
         .onAppear { animateGraph() }
 
@@ -299,6 +305,7 @@ struct HeartChartView: View {
                         data.averageQuantity()
                 }
                 // All objects in data will now have "animate" set to false.
+                print("loadData: count =", data.count)
 
                 dateToValueMap = [:]
                 for item in data {

@@ -81,6 +81,7 @@
 			isa = PBXGroup;
 			children = (
 				1A17BE3F285964FB00B16F56 /* SwiftChartsDemoApp.swift */,
+				1A17BE43285964FC00B16F56 /* Assets.xcassets */,
 				1AC4B1F228AC381200093F25 /* SwiftChartsDemo.entitlements */,
 				1AC4B1DB28AC0A9200093F25 /* HealthStore.swift */,
 				1A95877C28B12567007BE685 /* DragDetect.swift */,
@@ -89,7 +90,6 @@
 				1AC4B1E528AC0D9900093F25 /* Models */,
 				1AC4B20128AC80EE00093F25 /* Views */,
 				1AC4B1E228AC0D2D00093F25 /* ViewModels */,
-				1A17BE43285964FC00B16F56 /* Assets.xcassets */,
 				1A17BE45285964FC00B16F56 /* Preview Content */,
 			);
 			path = SwiftChartsDemo;
