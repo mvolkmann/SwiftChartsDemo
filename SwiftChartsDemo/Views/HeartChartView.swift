@@ -84,7 +84,7 @@ struct HeartChartView: View {
         .chartXAxis(.hidden)
 
         // Change the y-axis to begin an minValue and end at maxValue.
-        // This breaks the ability to set the chart height below.
+        // TODO: This breaks the ability to set the chart height below.
         // .chartYScale(domain: minValue ... maxValue)
 
         // Give the plot area a background color.
