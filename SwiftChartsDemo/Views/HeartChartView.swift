@@ -30,6 +30,7 @@ struct HeartChartView: View {
     private var annotation: some View {
         VStack {
             Text(selectedDate)
+            // TODO: Select number of decimal places to display based on metric.
             Text(String(format: "%0.2f", selectedValue))
         }
         .padding(5)
@@ -40,38 +41,59 @@ struct HeartChartView: View {
     }
 
     private var chart: some View {
-        Chart(data) { datedValue in
-            // TODO: Select number of decimal places to display based on metric.
-            let value = datedValue.animate ? datedValue.value : 0
-            if chartType == "Bar" {
-                BarMark(
-                    x: .value("Date", datedValue.date),
-                    y: .value("Value", value)
-                )
-                .foregroundStyle(.blue.gradient)
-            } else {
-                LineMark(
-                    x: .value("Date", datedValue.date),
-                    y: .value("Value", value)
-                )
-                .interpolationMethod(interpolationMethod)
-                .symbol(by: .value("Date", datedValue.date))
+        Chart {
+            // Using Foreach instead of passing data to Chart above
+            // so we can get the index of each item in data.
+            // The index is used to determine the
+            // position of the RuleMark annotation below.
 
-                AreaMark(
-                    x: .value("Date", datedValue.date),
-                    y: .value("Value", value)
-                )
-                .foregroundStyle(.blue.opacity(0.2))
-                .interpolationMethod(interpolationMethod)
-            }
+            // With this version of Foreach, we get "The compiler is
+            // unable to type-check this expression in a resaonable time".
+            // ForEach(data.enumerated(), id: \.self) { index, datedValue in
 
-            if datedValue.date == selectedDate {
-                RuleMark(x: .value("Date", selectedDate))
-                    .annotation(position: .top) { annotation }
-                    .foregroundStyle(.red)
-                    .lineStyle(.init(lineWidth: 1, dash: [10], dashPhase: 5))
+            // This version of ForEach works.
+            ForEach(data.indices, id: \.self) { index in
+                let datedValue = data[index]
+
+                let value = datedValue.animate ? datedValue.value : 0
+
+                if chartType == "Bar" {
+                    BarMark(
+                        x: .value("Date", datedValue.date),
+                        y: .value("Value", value)
+                    )
+                    .foregroundStyle(.blue.gradient)
+                } else {
+                    LineMark(
+                        x: .value("Date", datedValue.date),
+                        y: .value("Value", value)
+                    )
+                    .interpolationMethod(interpolationMethod)
+                    .symbol(by: .value("Date", datedValue.date))
+
+                    AreaMark(
+                        x: .value("Date", datedValue.date),
+                        y: .value("Value", value)
+                    )
+                    .foregroundStyle(.blue.opacity(0.2))
+                    .interpolationMethod(interpolationMethod)
+                }
+
+                if datedValue.date == selectedDate {
+                    RuleMark(x: .value("Date", selectedDate))
+                        .annotation(position: annotationPosition(index)) { annotation }
+                        .foregroundStyle(.red)
+                        .lineStyle(.init(lineWidth: 1, dash: [10], dashPhase: 5))
+                }
             }
         }
+
+        .frame(height: 400)
+
+        // Leave room for RuleMark annotations.
+        .padding(.horizontal, 20)
+        .padding(.top, 50)
+
         .onAppear { animateGraph() }
 
         .chartLegend(.hidden)
@@ -83,18 +105,19 @@ struct HeartChartView: View {
         // TODO: Can you only hide the labels?
         .chartXAxis(.hidden)
 
-        // Change the y-axis to begin an minValue and end at maxValue.
-        // TODO: This breaks the ability to set the chart height below.
-        // .chartYScale(domain: minValue ... maxValue)
+        .if(canScaleYAxis(metric: metric)) { view in
+            view
+                // Change the y-axis to begin an minValue and end at maxValue.
+                .chartYScale(domain: minValue ... maxValue)
+
+                // Stop AreaMarks from spilling outside chart.
+                .clipShape(Rectangle())
+        }
 
         // Give the plot area a background color.
         .chartPlotStyle { content in
             content.background(Color(.secondarySystemBackground))
         }
-
-        .frame(height: 400)
-        .padding(.leading, 20) // leaves room to left for RuleMark annotation
-        .padding(.top, 50) // leaves room above for RuleMark annotation
     }
 
     private var chartTypePicker: some View {
@@ -104,7 +127,7 @@ struct HeartChartView: View {
             selected: $chartType
         )
         .onChange(of: chartType) { _ in
-            // Make a copy of data where animate is false in each item.
+            // Make a copy of data where "animate" is false in each item.
             // This allows the new chart to be animated.
             data = data.map { item in
                 DatedValue(
@@ -232,6 +255,18 @@ struct HeartChartView: View {
         }
     }
 
+    private func annotationPosition(_ index: Int) -> AnnotationPosition {
+        let percent = Double(index) / Double(data.count)
+        return percent < 0.1 ? .topTrailing :
+            percent > 0.95 ? .topLeading :
+            .top
+    }
+
+    private func canScaleYAxis(metric: Metric) -> Bool {
+        if chartType == "Bar" { return false }
+        return metric.unit != .percent()
+    }
+
     private func chartOverlay(proxy: ChartProxy) -> some View {
         GeometryReader { innerProxy in
             Rectangle()
@@ -263,7 +298,7 @@ struct HeartChartView: View {
                         data.sumQuantity() :
                         data.averageQuantity()
                 }
-                // All objects in data will now have animate set to false.
+                // All objects in data will now have "animate" set to false.
 
                 dateToValueMap = [:]
                 for item in data {
