@@ -32,8 +32,7 @@ struct HeartChartView: View {
     private var annotation: some View {
         VStack {
             Text(selectedDate)
-            // TODO: Select number of decimal places to display based on metric.
-            Text(String(format: "%0.2f", selectedValue))
+            Text(formattedValue)
         }
         .padding(5)
         .background {
@@ -148,6 +147,18 @@ struct HeartChartView: View {
         }
     }
 
+    private var formattedValue: String {
+        let intUnits: [HKUnit] = [.count(), .largeCalorie()]
+        if intUnits.contains(metric.unit) {
+            let numberFormatter = NumberFormatter()
+            numberFormatter.numberStyle = .decimal
+            let value = Int(selectedValue)
+            return numberFormatter.string(from: NSNumber(value: value))!
+        }
+
+        return String(format: "%.2f", selectedValue)
+    }
+
     private var maxValue: Double {
         let item = data.max { a, b in a.value < b.value }
         return item?.value ?? 0.0
@@ -240,6 +251,7 @@ struct HeartChartView: View {
     // MARK: - Methods
 
     private func animateGraph() {
+        print("animateGraph: count = \(data.count)")
         for (index, _) in data.enumerated() {
             // Delay rendering each data point a bit longer than the previous one.
             DispatchQueue.main.asyncAfter(
@@ -251,7 +263,11 @@ struct HeartChartView: View {
                     dampingFraction: spring,
                     blendDuration: spring
                 )) {
-                    data[index].animate = true
+                    // Skip out-of-range indexes.
+                    // TODO: Why do we get them?
+                    if index < data.count {
+                        data[index].animate = true
+                    }
                 }
             }
         }

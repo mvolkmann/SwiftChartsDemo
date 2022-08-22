@@ -5,8 +5,14 @@ import SwiftUI
 final class HealthKitViewModel: ObservableObject {
     // This is a singleton class.
     static let shared = HealthKitViewModel()
-
     private init() {}
+
+    // MARK: - Constants
+
+    static let addZeros: Set<HKQuantityTypeIdentifier> = [
+        .distanceCycling, .distanceWalkingRunning, .distanceWheelchair,
+        .numberOfTimesFallen, .pushCount, .stepCount
+    ]
 
     // MARK: - Properties
 
@@ -196,7 +202,7 @@ final class HealthKitViewModel: ObservableObject {
             interval: interval
         )
 
-        return collection.map { data -> DatedValue in
+        let datedValues = collection.map { data -> DatedValue in
             let date = data.startDate
             let quantity = quantityFunction(data)
             let value = quantity?.doubleValue(for: metric.unit) ?? 0
@@ -207,6 +213,26 @@ final class HealthKitViewModel: ObservableObject {
                 value: value
             )
         }
+
+        /* TODO: FINISH IMPLEMENTING THIS!
+        if addZeros.contains(identifier) {
+            for index in 0 ..< data.count - 1 {
+                let current = data[index]
+                let next = data[index + 1]
+                if frequency == .hour {
+                    if currentHour != nextHour - 1 {
+                        insert datedValues for the missing hours
+                    }
+                } else if frequencey == .day {
+                    if currentDay != nextDay - 1 {
+                        insert datedValues for the missing days
+                    }
+                }
+            }
+        }
+        */
+
+        return datedValues
     }
 
     // Gets the last 10 events of a given type.
