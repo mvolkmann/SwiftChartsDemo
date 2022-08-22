@@ -97,7 +97,7 @@ class HealthStore {
         let end = endDate ?? Date()
 
         // Default start date is seven days before the end date.
-        let start = startDate ?? end.daysAgo(7)
+        let start = startDate ?? end.daysBefore(7)
 
         // Default interval is one day.
         let intervalComponents = interval ?? DateComponents(day: 1)

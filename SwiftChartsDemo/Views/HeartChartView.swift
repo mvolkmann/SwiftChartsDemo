@@ -185,8 +185,8 @@ struct HeartChartView: View {
     private var startDate: Date {
         let today = Date().withoutTime
         return timeSpan == "1 Day" ? today.yesterday :
-            timeSpan == "1 Week" ? today.daysAgo(7) :
-            timeSpan == "1 Month" ? today.monthsAgo(1) :
+            timeSpan == "1 Week" ? today.daysBefore(7) :
+            timeSpan == "1 Month" ? today.monthsBefore(1) :
             today
     }
 

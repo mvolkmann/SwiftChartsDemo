@@ -148,7 +148,16 @@ extension Date {
 
     // MARK: - Instance Methods
 
-    func daysAgo(_ days: Int) -> Date {
+    func daysAfter(_ days: Int) -> Date {
+        let calendar = Calendar.current
+        return calendar.date(
+            byAdding: .day,
+            value: days,
+            to: self
+        )!
+    }
+
+    func daysBefore(_ days: Int) -> Date {
         let calendar = Calendar.current
         return calendar.date(
             byAdding: .day,
@@ -166,7 +175,16 @@ extension Date {
         return components.day ?? Int.max // should always have a value for day
     }
 
-    func hoursAgo(_ hours: Int) -> Date {
+    func hoursAfter(_ hours: Int) -> Date {
+        let calendar = Calendar.current
+        return calendar.date(
+            byAdding: .hour,
+            value: hours,
+            to: self
+        )!
+    }
+
+    func hoursBefore(_ hours: Int) -> Date {
         let calendar = Calendar.current
         return calendar.date(
             byAdding: .hour,
@@ -175,7 +193,16 @@ extension Date {
         )!
     }
 
-    func monthsAgo(_ months: Int) -> Date {
+    func hoursBetween(date: Date) -> Int {
+        let components = Calendar.current.dateComponents(
+            [.hour],
+            from: self,
+            to: date
+        )
+        return components.hour ?? Int.max // should always have a value for hour
+    }
+
+    func monthsBefore(_ months: Int) -> Date {
         let calendar = Calendar.current
         return calendar.date(
             byAdding: .month,
@@ -188,7 +215,7 @@ extension Date {
         Int(endDate.timeIntervalSince1970 - timeIntervalSince1970)
     }
 
-    func weeksAgo(_ weeks: Int) -> Date {
+    func weeksBefore(_ weeks: Int) -> Date {
         let calendar = Calendar.current
         return calendar.date(
             byAdding: .day,

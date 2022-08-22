@@ -202,7 +202,7 @@ final class HealthKitViewModel: ObservableObject {
             interval: interval
         )
 
-        let datedValues = collection.map { data -> DatedValue in
+        var datedValues = collection.map { data -> DatedValue in
             let date = data.startDate
             let quantity = quantityFunction(data)
             let value = quantity?.doubleValue(for: metric.unit) ?? 0
@@ -214,23 +214,44 @@ final class HealthKitViewModel: ObservableObject {
             )
         }
 
-        /* TODO: FINISH IMPLEMENTING THIS!
-        if addZeros.contains(identifier) {
-            for index in 0 ..< data.count - 1 {
-                let current = data[index]
-                let next = data[index + 1]
+        if HealthKitViewModel.addZeros.contains(identifier) {
+            for index in 0 ..< datedValues.count - 1 {
+                let current = datedValues[index]
+                let next = datedValues[index + 1]
+                let currentDate = Date.from(ms: current.ms)
+                let nextDate = Date.from(ms: next.ms)
+
                 if frequency == .hour {
-                    if currentHour != nextHour - 1 {
-                        insert datedValues for the missing hours
+                    let missing = currentDate.hoursBetween(date: nextDate) - 1
+                    if missing > 0 {
+                        for delta in 1 ... missing {
+                            let date = currentDate.hoursAfter(delta)
+                            let datedValue = DatedValue(
+                                date: date.ymdh,
+                                ms: date.milliseconds,
+                                unit: current.unit,
+                                value: 0.0
+                            )
+                            datedValues.insert(datedValue, at: index + delta)
+                        }
                     }
-                } else if frequencey == .day {
-                    if currentDay != nextDay - 1 {
-                        insert datedValues for the missing days
+                } else if frequency == .day {
+                    let missing = currentDate.daysBetween(date: nextDate) - 1
+                    if missing > 0 {
+                        for delta in 1 ... missing {
+                            let date = currentDate.daysAfter(delta)
+                            let datedValue = DatedValue(
+                                date: date.ymd,
+                                ms: date.milliseconds,
+                                unit: current.unit,
+                                value: 0.0
+                            )
+                            datedValues.insert(datedValue, at: index + delta)
+                        }
                     }
                 }
             }
         }
-        */
 
         return datedValues
     }
@@ -243,7 +264,7 @@ final class HealthKitViewModel: ObservableObject {
 
         return try await withCheckedThrowingContinuation { continuation in
             let predicate = HKQuery.predicateForSamples(
-                withStart: Date().daysAgo(10),
+                withStart: Date().daysBefore(10),
                 end: nil
             )
             let query = HKSampleQuery(
