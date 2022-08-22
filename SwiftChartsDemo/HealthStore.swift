@@ -160,7 +160,7 @@ class HealthStore {
                 quantityType(.activeEnergyBurned),
                 quantityType(.appleExerciseTime),
 
-                // This never returns any data.
+                // TODO: This never returns any data.
                 quantityType(.appleMoveTime),
 
                 quantityType(.appleStandTime),

@@ -62,46 +62,6 @@ final class HealthKitViewModel: ObservableObject {
     @Published private(set) var walkingSteadiness: [DatedValue] = []
     @Published private(set) var walkingStepLength: [DatedValue] = []
 
-    let collectionNames = [
-        "activeEnergyBurned",
-        "appleExerciseTime",
-        "appleMoveTime",
-        "appleStandTime",
-        "basalEnergyBurned",
-        "bodyMass",
-        "distanceCycling",
-        "distanceWalkingRunning",
-        "distanceWheelchair",
-        "environmentalAudioExposure",
-        "flightsClimbed",
-        "headphoneAudioExposure",
-        "heartRate",
-        "heartRateVariabilitySDNN",
-        "highHeartRateEvents",
-        "irregularHeartRhythmEvents",
-        "leanBodyMass",
-        "lowHeartRateEvents",
-        "numberOfTimesFallen",
-        "oxygenSaturation",
-        "pushCount",
-        "respiratoryRate",
-        "restingHeartRate",
-        "sixMinuteWalkTestDistance",
-        "sleepDuration",
-        "sleepInterruptions",
-        "sleepScore",
-        "stairAscentSpeed",
-        "stairDescentSpeed",
-        "stepCount",
-        "vo2Max",
-        "walkingAsymmetryPercentage",
-        "walkingDoubleSupportPercentage",
-        "walkingHeartRateAverage",
-        "walkingSpeed",
-        "walkingSteadiness",
-        "walkingStepLength"
-    ]
-
     var deviceId: String?
 
     var store = HealthStore()
@@ -254,58 +214,6 @@ final class HealthKitViewModel: ObservableObject {
         }
 
         return datedValues
-    }
-
-    // Gets the last 10 events of a given type.
-    private func getHealthKitEvents(
-        identifier: HKCategoryTypeIdentifier
-    ) async throws -> [DatedValue] {
-        let categoryType = HKObjectType.categoryType(forIdentifier: identifier)!
-
-        return try await withCheckedThrowingContinuation { continuation in
-            let predicate = HKQuery.predicateForSamples(
-                withStart: Date().daysBefore(10),
-                end: nil
-            )
-            let query = HKSampleQuery(
-                sampleType: categoryType,
-                predicate: predicate,
-                limit: 10, // TODO: Is this limit okay?
-                sortDescriptors: []
-            ) { _, results, error in
-                if let error = error {
-                    continuation.resume(throwing: error)
-                    return
-                }
-                guard let results = results
-                else {
-                    continuation.resume(returning: [])
-                    return
-                }
-
-                let newValue = results.map { result -> DatedValue in
-                    let date = result.startDate
-                    var value = 0.0
-                    if let threshold = result.metadata?[HKMetadataKeyHeartRateEventThreshold] {
-                        // threshold type is Any.
-                        let text = String(describing: threshold)
-                        if let number = text.split(separator: " ").first {
-                            value = Double(number) ?? 0.0
-                        }
-                    }
-                    return DatedValue(
-                        date: date.ymdhms,
-                        ms: date.milliseconds,
-                        unit: "count",
-                        value: value
-                    )
-                }
-
-                continuation.resume(returning: newValue)
-            }
-
-            HKHealthStore().execute(query)
-        }
     }
 
     private func getSleepData(startDate: Date?) async throws {

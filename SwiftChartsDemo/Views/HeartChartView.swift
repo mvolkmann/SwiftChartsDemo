@@ -117,6 +117,8 @@ struct HeartChartView: View {
                 .chartYScale(domain: minValue ... maxValue)
 
                 // Stop AreaMarks from spilling outside chart.
+                // But this cuts off the bottom half
+                // of the bottom number on the y-axis!
                 .clipShape(Rectangle())
         }
 
@@ -239,7 +241,12 @@ struct HeartChartView: View {
             chartTypePicker
             Text(title).fontWeight(.bold)
             // Text("values go from \(minValue) to \(maxValue)")
-            chart
+            if data.count == 0 {
+                Text("No data was found for this metric and time span.")
+                    .padding(.top)
+            } else {
+                chart
+            }
             Spacer()
         }
         .onAppear(perform: loadData)
