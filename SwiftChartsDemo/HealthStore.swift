@@ -159,14 +159,8 @@ class HealthStore {
 
                 quantityType(.activeEnergyBurned),
                 quantityType(.appleExerciseTime),
-
-                // TODO: This never returns any data.
-                quantityType(.appleMoveTime),
-
                 quantityType(.appleStandTime),
-
                 quantityType(.appleWalkingSteadiness),
-
                 quantityType(.basalEnergyBurned),
 
                 // This data must be supplied by a device like a Withings scale.

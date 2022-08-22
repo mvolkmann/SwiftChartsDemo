@@ -43,11 +43,6 @@ class Metrics {
             unit: .minute()
         )
         addMetricSum(
-            name: "Move Time (calories)",
-            identifier: .appleMoveTime,
-            unit: .largeCalorie()
-        )
-        addMetricSum(
             name: "Stand Time (minutes)",
             identifier: .appleStandTime,
             unit: .minute()

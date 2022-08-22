@@ -18,8 +18,6 @@ final class HealthKitViewModel: ObservableObject {
 
     @Published private(set) var activeEnergyBurned: [DatedValue] = []
     @Published private(set) var appleExerciseTime: [DatedValue] = []
-    // TODO: We are not getting appleMoveTime yet.
-    @Published private(set) var appleMoveTime: [DatedValue] = []
     @Published private(set) var appleStandTime: [DatedValue] = []
     // This is the same as "Resting Energy".
     @Published private(set) var basalEnergyBurned: [DatedValue] = []
