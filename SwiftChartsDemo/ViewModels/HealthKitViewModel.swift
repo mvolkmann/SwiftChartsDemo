@@ -172,7 +172,8 @@ final class HealthKitViewModel: ObservableObject {
             )
         }
 
-        if HealthKitViewModel.addZeros.contains(identifier) {
+        if !datedValues.isEmpty,
+            HealthKitViewModel.addZeros.contains(identifier) {
             for index in 0 ..< datedValues.count - 1 {
                 let current = datedValues[index]
                 let next = datedValues[index + 1]

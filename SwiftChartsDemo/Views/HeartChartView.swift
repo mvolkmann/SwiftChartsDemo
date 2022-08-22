@@ -290,7 +290,7 @@ struct HeartChartView: View {
 
     private func canScaleYAxis(metric: Metric) -> Bool {
         if chartType == "Bar" { return false }
-        return metric.unit != .percent()
+        return metric.unit != .count() && metric.unit != .percent()
     }
 
     private func chartOverlay(proxy: ChartProxy) -> some View {
