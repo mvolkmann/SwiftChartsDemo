@@ -60,7 +60,8 @@ struct HeartChartView: View {
             ForEach(data.indices, id: \.self) { index in
                 let datedValue = data[index]
 
-                let value = datedValue.animate ? datedValue.value : 0
+                let multiplier = metric.unit == .percent() ? 100.0 : 1.0
+                var value = datedValue.animate ? datedValue.value * multiplier : 0.0
 
                 if chartType == "Bar" {
                     BarMark(
