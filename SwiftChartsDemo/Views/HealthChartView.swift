@@ -4,7 +4,7 @@ import SwiftUI
 
 // Much of this code was inspired by the Kavsoft YouTube video at
 // https://www.youtube.com/watch?v=xS-fGYDD0qk.
-struct HeartChartView: View {
+struct HealthChartView: View {
     // MARK: - State
 
     @Environment(\.colorScheme) var colorScheme
@@ -61,7 +61,7 @@ struct HeartChartView: View {
                 let datedValue = data[index]
 
                 let multiplier = metric.unit == .percent() ? 100.0 : 1.0
-                var value = datedValue.animate ? datedValue.value * multiplier : 0.0
+                let value = datedValue.animate ? datedValue.value * multiplier : 0.0
 
                 if chartType == "Bar" {
                     BarMark(
@@ -114,6 +114,7 @@ struct HeartChartView: View {
         .if(canScaleYAxis(metric: metric)) { view in
             view
                 // Change the y-axis to begin an minValue and end at maxValue.
+                // This causes a crash for some metrics.
                 .chartYScale(domain: minValue ... maxValue)
 
                 // Stop AreaMarks from spilling outside chart.
@@ -159,7 +160,11 @@ struct HeartChartView: View {
             return numberFormatter.string(from: NSNumber(value: value))!
         }
 
-        return String(format: "%.2f", selectedValue)
+        if metric.unit == .percent() {
+            return String(format: "%.2f", selectedValue * 100) + "%"
+        } else {
+            return String(format: "%.2f", selectedValue)
+        }
     }
 
     private var maxValue: Double {
@@ -190,6 +195,13 @@ struct HeartChartView: View {
         return timeSpan == "1 Day" ? today.yesterday :
             timeSpan == "1 Week" ? today.daysBefore(7) :
             timeSpan == "1 Month" ? today.monthsBefore(1) :
+            // For .headphoneAudioExposure I could get data for 25 days,
+            // but asking for any more crashes the app with the error
+            // "Unable to invalidate interval: no data source available".
+            // I had a small amount of data from Apple Watch.
+            // I couldn't view the data from iPhone ... maybe too much.
+            // After deleting all of that data from the Health app,
+            // I can not view that metric with "1 Month" selected.
             today
     }
 
@@ -259,7 +271,6 @@ struct HeartChartView: View {
     // MARK: - Methods
 
     private func animateGraph() {
-        print("animateGraph: count = \(data.count)")
         for (index, _) in data.enumerated() {
             // Delay rendering each data point a bit longer than the previous one.
             DispatchQueue.main.asyncAfter(
@@ -290,7 +301,15 @@ struct HeartChartView: View {
 
     private func canScaleYAxis(metric: Metric) -> Bool {
         if chartType == "Bar" { return false }
-        return metric.unit != .count() && metric.unit != .percent()
+
+        if metric.unit == .percent() { return false }
+
+        // If the percent difference between the min and max values is very small,
+        // setting the y-axis to only go from min to max causes the app to crash.
+        let min = minValue
+        let percentDifference = (maxValue - min) / min
+        // print("percentDifference =", percentDifference)
+        return percentDifference >= 0.1
     }
 
     private func chartOverlay(proxy: ChartProxy) -> some View {
@@ -313,9 +332,13 @@ struct HeartChartView: View {
     }
 
     private func loadData() {
+        // Clear previous data.
+        data = [] // clears previous data
+        dateToValueMap = [:]
+
         Task {
             do {
-                data = try await vm.getHealthKitData(
+                let newData = try await vm.getHealthKitData(
                     identifier: metric.identifier,
                     startDate: startDate,
                     frequency: frequency
@@ -325,13 +348,13 @@ struct HeartChartView: View {
                         data.averageQuantity()
                 }
                 // All objects in data will now have "animate" set to false.
-                print("loadData: count =", data.count)
 
                 dateToValueMap = [:]
-                for item in data {
+                for item in newData {
                     dateToValueMap[item.date] = item.value
                 }
 
+                data = newData
                 animateGraph()
             } catch {
                 print("error getting health data:", error)
