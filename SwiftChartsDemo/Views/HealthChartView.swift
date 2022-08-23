@@ -27,6 +27,22 @@ struct HealthChartView: View {
     // .catmullRom (formulated by Edwin Catmull and Raphael Rom).
     let interpolationMethod: InterpolationMethod = .catmullRom
 
+    let unitMap: [HKUnit: String] = [
+        .count(): "count",
+        HKUnit(from: "count/min"): "beats per minute",
+        HKUnit(from: "ft/s"): "feet per second",
+        .hour(): "hours",
+        .largeCalorie(): "calories",
+        HKUnit(from: "m/s"): "meters per second",
+        .inch(): "inches",
+        .meter(): "meters",
+        .mile(): "miles",
+        HKUnit.secondUnit(with: .milli): "standard deviation in milliseconds",
+        .minute(): "minutes",
+        .percent(): "percentage",
+        .pound(): "pounds"
+    ]
+
     // MARK: - Properties
 
     private var annotation: some View {
@@ -172,6 +188,13 @@ struct HealthChartView: View {
         return item?.value ?? 0.0
     }
 
+    private var metricName: String {
+        if metric.identifier == .respiratoryRate {
+            return "breaths per minute"
+        }
+        return unitMap[metric.unit] ?? metric.unit.unitString
+    }
+
     private var metricPicker: some View {
         HStack {
             Text("Metric").fontWeight(.bold)
@@ -228,6 +251,9 @@ struct HealthChartView: View {
     }
 
     private var title: String {
+        if metric.identifier == .bodyMass { return "Weight" }
+        if metric.identifier == .vo2Max { return "VO2 Max" }
+
         var text = metric.identifier.rawValue
 
         // Remove metric prefix.
@@ -252,6 +278,7 @@ struct HealthChartView: View {
             timeSpanPicker
             chartTypePicker
             Text(title).fontWeight(.bold)
+            Text(metricName)
             // Text("values go from \(minValue) to \(maxValue)")
             if data.count == 0 {
                 Text("No data was found for this metric and time span.")

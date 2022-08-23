@@ -32,18 +32,18 @@ class Metrics {
     // swiftlint:disable function_body_length
     private init() {
         addMetricSum(
-            name: "Active Energy Burned (calories)",
+            name: "Active Energy Burned",
             identifier: .activeEnergyBurned,
             unit: .largeCalorie(),
             frequency: .hour
         )
         addMetricSum(
-            name: "Exercise Time (minutes)",
+            name: "Exercise Time",
             identifier: .appleExerciseTime,
             unit: .minute()
         )
         addMetricSum(
-            name: "Stand Time (minutes)",
+            name: "Stand Time",
             identifier: .appleStandTime,
             unit: .minute()
         )
@@ -53,7 +53,7 @@ class Metrics {
             unit: .percent()
         )
         addMetricSum(
-            name: "Resting Energy Burned (calories)",
+            name: "Resting Energy Burned",
             identifier: .basalEnergyBurned,
             unit: .largeCalorie(),
             frequency: .hour
@@ -65,7 +65,7 @@ class Metrics {
             lowerIsBetter: true
         )
         addMetricAverage(
-            name: "Weight (pounds)",
+            name: "Weight",
             identifier: .bodyMass,
             unit: .pound(),
             lowerIsBetter: true
@@ -77,17 +77,17 @@ class Metrics {
             lowerIsBetter: true
         )
         addMetricSum(
-            name: "Distance Cycling (miles)",
+            name: "Distance Cycling",
             identifier: .distanceCycling,
             unit: .mile()
         )
         addMetricSum(
-            name: "Distance Walking & Running (miles)",
+            name: "Distance Walking & Running",
             identifier: .distanceWalkingRunning,
             unit: .mile()
         )
         addMetricSum(
-            name: "Distance Wheelchair (miles)",
+            name: "Distance Wheelchair",
             identifier: .distanceWheelchair,
             unit: .mile()
         )
@@ -109,7 +109,7 @@ class Metrics {
             lowerIsBetter: true
         )
         addMetricAverage(
-            name: "Heart Rate (BPM)",
+            name: "Heart Rate",
             identifier: .heartRate,
             unit: HKUnit(from: "count/min"),
             frequency: .minute,
@@ -122,7 +122,7 @@ class Metrics {
             lowerIsBetter: true
         )
         addMetricAverage(
-            name: "Lean Body Mass (pounds)",
+            name: "Lean Body Mass",
             identifier: .leanBodyMass,
             unit: .pound(),
             lowerIsBetter: true
@@ -145,29 +145,29 @@ class Metrics {
             frequency: .hour
         )
         addMetricAverage(
-            name: "Respiratory Rate (breaths per minute)",
+            name: "Respiratory Rate",
             identifier: .respiratoryRate,
             unit: HKUnit(from: "count/min"),
             lowerIsBetter: true
         )
         addMetricAverage(
-            name: "Resting Heart Rate (BPM)",
+            name: "Resting Heart Rate",
             identifier: .restingHeartRate,
             unit: HKUnit(from: "count/min"),
             lowerIsBetter: true
         )
         addMetricAverage(
-            name: "Six Minute Walk Test Distance (meters)",
+            name: "Six Minute Walk Test Distance",
             identifier: .sixMinuteWalkTestDistance,
             unit: .meter()
         )
         addMetricAverage(
-            name: "Stair Ascent Speed (feet per second)",
+            name: "Stair Ascent Speed",
             identifier: .stairAscentSpeed,
             unit: HKUnit(from: "ft/s")
         )
         addMetricAverage(
-            name: "Stair Descent Speed (feet per second)",
+            name: "Stair Descent Speed",
             identifier: .stairDescentSpeed,
             unit: HKUnit(from: "ft/s")
         )
@@ -200,19 +200,19 @@ class Metrics {
             lowerIsBetter: true
         )
         addMetricAverage(
-            name: "Walking Heart Rate (BPM)",
+            name: "Walking Heart Rate",
             identifier: .walkingHeartRateAverage,
             unit: HKUnit(from: "count/min"),
             lowerIsBetter: true
         )
         addMetricAverage(
-            name: "Walking Speed (meters per second)",
+            name: "Walking Speed",
             identifier: .walkingSpeed,
             unit: HKUnit(from: "m/s"), // meters per second
             frequency: .hour
         )
         addMetricAverage(
-            name: "Walking Step Length (inches)",
+            name: "Walking Step Length",
             identifier: .walkingStepLength,
             unit: .inch()
         )
