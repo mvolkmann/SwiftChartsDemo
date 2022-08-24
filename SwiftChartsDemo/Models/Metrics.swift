@@ -1,7 +1,7 @@
 import HealthKit
 
 enum Frequency {
-    case minute, hour, day
+    case minute, hour, day, week
 }
 
 struct Metric: Hashable, Identifiable {

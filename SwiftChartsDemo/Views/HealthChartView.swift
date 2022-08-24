@@ -219,20 +219,21 @@ struct HealthChartView: View {
         return timeSpan == "1 Day" ? today.yesterday :
             timeSpan == "1 Week" ? today.daysBefore(7) :
             timeSpan == "1 Month" ? today.monthsBefore(1) :
+            timeSpan == "3 Months" ? today.monthsBefore(3) :
             // For .headphoneAudioExposure I could get data for 25 days,
             // but asking for any more crashes the app with the error
             // "Unable to invalidate interval: no data source available".
             // I had a small amount of data from Apple Watch.
             // I couldn't view the data from iPhone ... maybe too much.
             // After deleting all of that data from the Health app,
-            // I can not view that metric with "1 Month" selected.
+            // I can now view that metric with "1 Month" selected.
             today
     }
 
     private var timeSpanPicker: some View {
         picker(
             label: "Time Span",
-            values: ["1 Day", "1 Week", "1 Month"],
+            values: ["1 Day", "1 Week", "1 Month", "3 Months"],
             selected: $timeSpan
         )
         .onChange(of: timeSpan) { _ in
@@ -243,6 +244,8 @@ struct HealthChartView: View {
                 frequency = .day
             case "1 Month":
                 frequency = .day
+            case "3 Months":
+                frequency = .week
             default:
                 break
             }
@@ -356,10 +359,6 @@ struct HealthChartView: View {
     }
 
     private func loadData() {
-        // Clear previous data.
-        data = [] // clears previous data
-        dateToValueMap = [:]
-
         Task {
             do {
                 let newData = try await vm.getHealthKitData(

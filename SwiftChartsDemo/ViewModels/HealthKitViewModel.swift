@@ -150,6 +150,8 @@ final class HealthKitViewModel: ObservableObject {
         let interval =
             frequencyToUse == .minute ? DateComponents(minute: 1) :
             frequencyToUse == .hour ? DateComponents(hour: 1) :
+            frequencyToUse == .day ? DateComponents(day: 1) :
+            frequencyToUse == .week ? DateComponents(day: 7) :
             DateComponents(day: 1)
 
         let collection = try await store.queryQuantityCollection(
