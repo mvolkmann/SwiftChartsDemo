@@ -310,11 +310,7 @@ struct HealthChartView: View {
                     dampingFraction: spring,
                     blendDuration: spring
                 )) {
-                    // Skip out-of-range indexes.
-                    // TODO: Why do we get them?
-                    if index < data.count {
-                        data[index].animate = true
-                    }
+                    data[index].animate = true
                 }
             }
         }
