@@ -93,12 +93,14 @@ struct HealthChartView: View {
                     .interpolationMethod(interpolationMethod)
                     .symbol(by: .value("Date", datedValue.date))
 
-                    AreaMark(
-                        x: .value("Date", datedValue.date),
-                        y: .value("Value", value)
-                    )
-                    .foregroundStyle(.blue.opacity(0.2))
-                    .interpolationMethod(interpolationMethod)
+                    if !canScaleYAxis(metric: metric) {
+                        AreaMark(
+                            x: .value("Date", datedValue.date),
+                            y: .value("Value", value)
+                        )
+                        .foregroundStyle(.blue.opacity(0.2))
+                        .interpolationMethod(interpolationMethod)
+                    }
                 }
 
                 if datedValue.date == selectedDate {
@@ -136,7 +138,7 @@ struct HealthChartView: View {
                 // Stop AreaMarks from spilling outside chart.
                 // But this cuts off the bottom half
                 // of the bottom number on the y-axis!
-                .clipShape(Rectangle())
+                // .clipShape(Rectangle())
         }
 
         // Give the plot area a background color.
