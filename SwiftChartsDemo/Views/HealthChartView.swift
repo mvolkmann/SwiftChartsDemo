@@ -178,11 +178,10 @@ struct HealthChartView: View {
             return numberFormatter.string(from: NSNumber(value: value))!
         }
 
-        if metric.unit == .percent() {
-            return String(format: "%.2f", selectedValue * 100) + "%"
-        } else {
-            return String(format: "%.2f", selectedValue)
-        }
+        let format = "%.\(sd(metric.decimalPlaces))f"
+        let isPercent = metric.unit == .percent()
+        let value = isPercent ? selectedValue * 100 : selectedValue
+        return String(format: format, value) + (isPercent ? "%" : "")
     }
 
     private var maxValue: Double {

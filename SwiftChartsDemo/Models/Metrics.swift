@@ -11,6 +11,7 @@ struct Metric: Hashable, Identifiable {
     let option: HKStatisticsOptions
     let frequency: Frequency
     let lowerIsBetter: Bool
+    let decimalPlaces: Int
 
     var id = UUID()
 
@@ -40,12 +41,14 @@ class Metrics {
         addMetricSum(
             name: "Exercise Time",
             identifier: .appleExerciseTime,
-            unit: .minute()
+            unit: .minute(),
+            decimalPlaces: 0
         )
         addMetricSum(
             name: "Stand Time",
             identifier: .appleStandTime,
-            unit: .minute()
+            unit: .minute(),
+            decimalPlaces: 0
         )
         addMetricAverage(
             name: "Walking Steadiness %",
@@ -113,7 +116,8 @@ class Metrics {
             identifier: .heartRate,
             unit: HKUnit(from: "count/min"),
             frequency: .minute,
-            lowerIsBetter: true
+            lowerIsBetter: true,
+            decimalPlaces: 0
         )
         addMetricAverage(
             name: "Heart Rate Variability",
@@ -154,12 +158,14 @@ class Metrics {
             name: "Resting Heart Rate",
             identifier: .restingHeartRate,
             unit: HKUnit(from: "count/min"),
-            lowerIsBetter: true
+            lowerIsBetter: true,
+            decimalPlaces: 0
         )
         addMetricAverage(
             name: "Six Minute Walk Test Distance",
             identifier: .sixMinuteWalkTestDistance,
-            unit: .meter()
+            unit: .meter(),
+            decimalPlaces: 0
         )
         addMetricAverage(
             name: "Stair Ascent Speed",
@@ -203,7 +209,8 @@ class Metrics {
             name: "Walking Heart Rate",
             identifier: .walkingHeartRateAverage,
             unit: HKUnit(from: "count/min"),
-            lowerIsBetter: true
+            lowerIsBetter: true,
+            decimalPlaces: 0
         )
         addMetricAverage(
             name: "Walking Speed",
@@ -223,7 +230,8 @@ class Metrics {
         identifier: HKQuantityTypeIdentifier,
         unit: HKUnit,
         frequency: Frequency = .day,
-        lowerIsBetter: Bool = false
+        lowerIsBetter: Bool = false,
+        decimalPlaces: Int = 2
     ) {
         map[identifier] = Metric(
             name: name,
@@ -231,7 +239,8 @@ class Metrics {
             unit: unit,
             option: .discreteAverage,
             frequency: frequency,
-            lowerIsBetter: lowerIsBetter
+            lowerIsBetter: lowerIsBetter,
+            decimalPlaces: decimalPlaces
         )
     }
 
@@ -240,7 +249,8 @@ class Metrics {
         identifier: HKQuantityTypeIdentifier,
         unit: HKUnit,
         frequency: Frequency = .day,
-        lowerIsBetter: Bool = false
+        lowerIsBetter: Bool = false,
+        decimalPlaces: Int = 2
     ) {
         map[identifier] = Metric(
             name: name,
@@ -248,7 +258,8 @@ class Metrics {
             unit: unit,
             option: .cumulativeSum,
             frequency: frequency,
-            lowerIsBetter: lowerIsBetter
+            lowerIsBetter: lowerIsBetter,
+            decimalPlaces: decimalPlaces
         )
     }
 }
