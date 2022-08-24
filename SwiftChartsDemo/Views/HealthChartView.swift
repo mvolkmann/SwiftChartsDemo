@@ -47,7 +47,7 @@ struct HealthChartView: View {
 
     private var annotation: some View {
         VStack {
-            Text(selectedDate)
+            Text(dateDisplay)
             Text(formattedValue)
         }
         .padding(5)
@@ -167,6 +167,12 @@ struct HealthChartView: View {
 
             animateGraph()
         }
+    }
+
+    private var dateDisplay: String {
+        if timeSpan == "1 Day" { return selectedDate }
+        let parts = selectedDate.components(separatedBy: " ")
+        return parts.first ?? selectedDate
     }
 
     private var formattedValue: String {
