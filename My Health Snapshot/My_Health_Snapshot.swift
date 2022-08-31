@@ -4,6 +4,8 @@ import SwiftUI
 import WidgetKit
 
 struct Provider: IntentTimelineProvider {
+    private let store = HealthStore()
+
     func placeholder(in context: Context) -> MyEntry {
         MyEntry(
             date: Date(),
@@ -33,7 +35,7 @@ struct Provider: IntentTimelineProvider {
         for identifier: HKQuantityTypeIdentifier
     ) async -> Double {
         do {
-            let data = try await HealthKitViewModel.shared.getHealthKitData(
+            let data = try await store.getData(
                 identifier: identifier,
                 startDate: Calendar.current.startOfDay(for: Date()),
                 frequency: Frequency.day
@@ -54,6 +56,10 @@ struct Provider: IntentTimelineProvider {
     ) {
         print("My_Health_Snapshot.getTimeLine: entered")
         Task {
+            // The app must be run at least once so it can
+            // request authorization to access health data.
+            // Until that happens, this widget cannot access health data.
+            // The widget cannot request authorization.
             let stepCount = Int(await getQuantityToday(for: .stepCount))
             print("My_Health_Snapshot.getTimeLine: stepCount =", stepCount)
             let distance = await getQuantityToday(for: .distanceWalkingRunning)

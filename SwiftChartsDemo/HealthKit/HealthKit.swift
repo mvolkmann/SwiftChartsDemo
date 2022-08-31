@@ -1,6 +1,0 @@
-import HealthKit
-
-struct HealthKit {
-
-    
-}

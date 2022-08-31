@@ -301,7 +301,7 @@ struct HealthChartView: View {
         .onAppear(perform: loadData)
         .padding()
         .task {
-            await HealthKitViewModel.shared.requestPermission()
+            await HealthStore().requestPermission()
         }
     }
 
@@ -367,7 +367,7 @@ struct HealthChartView: View {
     private func loadData() {
         Task {
             do {
-                let newData = try await vm.getHealthKitData(
+                let newData = try await HealthStore().getData(
                     identifier: metric.identifier,
                     startDate: startDate,
                     frequency: frequency

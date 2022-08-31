@@ -32,7 +32,6 @@
 		1ABDDBAA28BED8CF00830D46 /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC4B1DE28AC0AE900093F25 /* DateExtension.swift */; };
 		1ABDDBAB28BED8DE00830D46 /* Global.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC4B1E028AC0B4200093F25 /* Global.swift */; };
 		1ABDDBAC28BED8EB00830D46 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC4B1F028AC108500093F25 /* StringExtension.swift */; };
-		1ABDDBAE28BF9F8E00830D46 /* HealthKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ABDDBAD28BF9F8E00830D46 /* HealthKit.swift */; };
 		1AC4B1DC28AC0A9200093F25 /* HealthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC4B1DB28AC0A9200093F25 /* HealthStore.swift */; };
 		1AC4B1DF28AC0AE900093F25 /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC4B1DE28AC0AE900093F25 /* DateExtension.swift */; };
 		1AC4B1E128AC0B4200093F25 /* Global.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC4B1E028AC0B4200093F25 /* Global.swift */; };
@@ -86,7 +85,6 @@
 		1ABDDB9628BED24E00830D46 /* My_Health_Snapshot.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = My_Health_Snapshot.intentdefinition; sourceTree = "<group>"; };
 		1ABDDB9728BED24F00830D46 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1ABDDB9928BED24F00830D46 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		1ABDDBAD28BF9F8E00830D46 /* HealthKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKit.swift; sourceTree = "<group>"; };
 		1AC4B1DB28AC0A9200093F25 /* HealthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStore.swift; sourceTree = "<group>"; };
 		1AC4B1DE28AC0AE900093F25 /* DateExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateExtension.swift; sourceTree = "<group>"; };
 		1AC4B1E028AC0B4200093F25 /* Global.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Global.swift; sourceTree = "<group>"; };
@@ -145,13 +143,12 @@
 				1A17BE3F285964FB00B16F56 /* SwiftChartsDemoApp.swift */,
 				1A17BE43285964FC00B16F56 /* Assets.xcassets */,
 				1AC4B1F228AC381200093F25 /* SwiftChartsDemo.entitlements */,
-				1AC4B1DB28AC0A9200093F25 /* HealthStore.swift */,
 				1A95877C28B12567007BE685 /* DragDetect.swift */,
 				1AC4B1E028AC0B4200093F25 /* Global.swift */,
 				1AC4B1DD28AC0AD100093F25 /* Extensions */,
+				1AC4B1E228AC0D2D00093F25 /* HealthKit */,
 				1AC4B1E528AC0D9900093F25 /* Models */,
 				1AC4B20128AC80EE00093F25 /* Views */,
-				1AC4B1E228AC0D2D00093F25 /* HealthKit */,
 				1A17BE45285964FC00B16F56 /* Preview Content */,
 			);
 			path = SwiftChartsDemo;
@@ -199,7 +196,7 @@
 			isa = PBXGroup;
 			children = (
 				1AC4B1E328AC0D4100093F25 /* HealthKitViewModel.swift */,
-				1ABDDBAD28BF9F8E00830D46 /* HealthKit.swift */,
+				1AC4B1DB28AC0A9200093F25 /* HealthStore.swift */,
 			);
 			path = HealthKit;
 			sourceTree = "<group>";
@@ -339,7 +336,6 @@
 				1AC4B1ED28AC0F3D00093F25 /* Metrics.swift in Sources */,
 				1AC4B1F128AC108500093F25 /* StringExtension.swift in Sources */,
 				1AC4B1EF28AC0F8200093F25 /* Sleep.swift in Sources */,
-				1ABDDBAE28BF9F8E00830D46 /* HealthKit.swift in Sources */,
 				1AC4B1E928AC0E0900093F25 /* SleepMetrics.swift in Sources */,
 				1AC4B1EB28AC0E5A00093F25 /* DatedValue.swift in Sources */,
 				1ABDDB9B28BED24F00830D46 /* My_Health_Snapshot.intentdefinition in Sources */,
@@ -505,6 +501,7 @@
 				DEVELOPMENT_TEAM = 4BG3523GAZ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Charts;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app needs to read your health data in order to display charts.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -537,6 +534,7 @@
 				DEVELOPMENT_TEAM = 4BG3523GAZ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Charts;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app needs to read your health data in order to display charts.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -567,7 +565,8 @@
 				DEVELOPMENT_TEAM = 4BG3523GAZ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "My Health Snapshot/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "My Health Snapshot";
+				INFOPLIST_KEY_CFBundleDisplayName = "My Health";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "This widget needs to read your health data in order to display it.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -595,7 +594,8 @@
 				DEVELOPMENT_TEAM = 4BG3523GAZ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "My Health Snapshot/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "My Health Snapshot";
+				INFOPLIST_KEY_CFBundleDisplayName = "My Health";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "This widget needs to read your health data in order to display it.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
