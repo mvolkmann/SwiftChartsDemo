@@ -61,9 +61,7 @@ struct Provider: IntentTimelineProvider {
             // Until that happens, this widget cannot access health data.
             // The widget cannot request authorization.
             let stepCount = Int(await getQuantityToday(for: .stepCount))
-            print("My_Health_Snapshot.getTimeLine: stepCount =", stepCount)
             let distance = await getQuantityToday(for: .distanceWalkingRunning)
-            print("My_Health_Snapshot.getTimeLine: distance =", distance)
 
             let now = Date()
             let entries: [MyEntry] = [
@@ -75,8 +73,11 @@ struct Provider: IntentTimelineProvider {
                 )
             ]
 
-            // Update the widget every minute for now.
-            // TODO: This is only running one time!
+            // Attempt to update the widget every minute, even though iOS will
+            // likely not update more frequently than once every 15 minutes.
+            // The widget is also updated every time
+            // the chart displayed in the app is updated.
+            // See the updateWidgets method in HealthChartView.swift.
             let later = now.addingTimeInterval(60) // seconds
             let timeline = Timeline(entries: entries, policy: .after(later))
             completion(timeline)
