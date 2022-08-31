@@ -1,6 +1,7 @@
 import Charts
 import HealthKit
 import SwiftUI
+import WidgetKit
 
 // Much of this code was inspired by the Kavsoft YouTube video at
 // https://www.youtube.com/watch?v=xS-fGYDD0qk.
@@ -308,6 +309,8 @@ struct HealthChartView: View {
     // MARK: - Methods
 
     private func animateGraph() {
+        updateWidgets()
+
         for (index, _) in data.enumerated() {
             // Delay rendering each data point a bit longer than the previous one.
             DispatchQueue.main.asyncAfter(
@@ -402,6 +405,15 @@ struct HealthChartView: View {
                 ForEach(values, id: \.self) { Text($0) }
             }
             .pickerStyle(.segmented)
+        }
+    }
+
+    private func updateWidgets() {
+        WidgetCenter.shared.getCurrentConfigurations { result in
+            guard case .success(let widgets) = result else { return }
+            for widget in widgets {
+                WidgetCenter.shared.reloadTimelines(ofKind: widget.kind)
+            }
         }
     }
 }
