@@ -38,10 +38,12 @@ extension Date {
         Calendar.current.date(byAdding: .day, value: -1, to: self)!
     }
 
+    var dayOfMonth: String {
+        formatted(.dateTime.day())
+    }
+
     var dayOfWeek: String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "EEEE"
-        return dateFormatter.string(from: self)
+        formatted(.dateTime.weekday(.wide))
     }
 
     var dayOfWeekLetter: String {
@@ -89,6 +91,10 @@ extension Date {
         Int((timeIntervalSince1970 * 1000.0).rounded())
     }
 
+    var month: String {
+        formatted(.dateTime.month(.wide))
+    }
+    
     // Returns a String representation of the Date in "h:mm:ss a" format.
     var time: String {
         let dateFormatter = DateFormatter()

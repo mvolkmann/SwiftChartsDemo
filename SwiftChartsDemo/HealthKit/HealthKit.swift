@@ -1,0 +1,6 @@
+import HealthKit
+
+struct HealthKit {
+
+    
+}
