@@ -1,13 +1,14 @@
+import ActivityKit
 import HealthKit
 import Intents
 import SwiftUI
 import WidgetKit
 
-struct Provider: IntentTimelineProvider {
+struct HealthProvider: IntentTimelineProvider {
     private let store = HealthStore()
 
-    func placeholder(in context: Context) -> MyEntry {
-        MyEntry(
+    func placeholder(in context: Context) -> HealthEntry {
+        HealthEntry(
             date: Date(),
             stepCount: 5000,
             distance: 0.9,
@@ -18,10 +19,10 @@ struct Provider: IntentTimelineProvider {
     func getSnapshot(
         for configuration: ConfigurationIntent,
         in context: Context,
-        completion: @escaping (MyEntry) -> ()
+        completion: @escaping (HealthEntry) -> ()
     ) {
         /*
-        let entry = MyEntry(
+        let entry = HealthEntry(
             date: Date(),
             stepCount: 5000,
             configuration: configuration
@@ -54,7 +55,7 @@ struct Provider: IntentTimelineProvider {
         in context: Context,
         completion: @escaping (Timeline<Entry>) -> ()
     ) {
-        print("My_Health_Snapshot.getTimeLine: entered")
+        print("My_Health_Snapshot.getTimeLine: family =", context.family)
         Task {
             // The app must be run at least once so it can
             // request authorization to access health data.
@@ -64,8 +65,8 @@ struct Provider: IntentTimelineProvider {
             let distance = await getQuantityToday(for: .distanceWalkingRunning)
 
             let now = Date()
-            let entries: [MyEntry] = [
-                MyEntry(
+            let entries: [HealthEntry] = [
+                HealthEntry(
                     date: now,
                     stepCount: stepCount,
                     distance: distance,
@@ -85,17 +86,17 @@ struct Provider: IntentTimelineProvider {
     }
 }
 
-struct MyEntry: TimelineEntry {
+struct HealthEntry: TimelineEntry {
     let date: Date
     let stepCount: Int
     let distance: Double
     let configuration: ConfigurationIntent
 }
 
-struct MyHealthSnaphotEntryView : View {
+struct HealthEntryView : View {
     @Environment(\.widgetFamily) var family
 
-    var entry: Provider.Entry
+    var entry: HealthProvider.Entry
 
     var formattedDate: String {
         "\(entry.date.month) \(entry.date.dayOfMonth)"
@@ -118,6 +119,12 @@ struct MyHealthSnaphotEntryView : View {
                 case .systemLarge:
                     Text(String(format: "Miles: %.2f", entry.distance))
                     Text("Add more data here.")
+                case .accessoryCircular:
+                    HealthLockScreenWidget(family: family, entry: entry)
+                case .accessoryInline:
+                    HealthLockScreenWidget(family: family, entry: entry)
+                case .accessoryRectangular:
+                    HealthLockScreenWidget(family: family, entry: entry)
                 default:
                     EmptyView()
                 }
@@ -128,23 +135,69 @@ struct MyHealthSnaphotEntryView : View {
     }
 }
 
-@main
-struct MyHealthSnaphot: Widget {
-    let kind: String = "MyHealthSnaphot"
+struct HealthLockScreenWidget: View {
+    @Environment(\.widgetRenderingMode) private var renderingMode
 
-    var body: some WidgetConfiguration {
-        IntentConfiguration(kind: kind, intent: ConfigurationIntent.self, provider: Provider()) { entry in
-            MyHealthSnaphotEntryView(entry: entry)
+    let family: WidgetFamily
+    let entry: HealthEntry
+
+    var body: some View {
+        switch renderingMode {
+        case .accented:
+            Text("\(family.rawValue) accented")
+                .foregroundColor(.orange)
+                // Apply this to all views whose color
+                // should be affected by the rendering mode.
+                .widgetAccentable()
+        case .fullColor:
+            Text("\(family.rawValue) full color")
+                .foregroundColor(.yellow)
+                .widgetAccentable()
+        case .vibrant:
+            Text("\(family.rawValue) vibrant")
+                .foregroundColor(.green)
+                .widgetAccentable()
+        default:
+            EmptyView()
         }
-        .configurationDisplayName("My Health Snapshot")
-        .description("This widget provides a snapshot of your HealthKit data.")
     }
 }
 
-struct MyHealthSnaphot_Previews: PreviewProvider {
+// @main
+struct HealthWidget: Widget {
+    let kind: String = "MyHealthSnaphot"
+
+    private var supportedFamilies: [WidgetFamily] {
+        var families: [WidgetFamily] = [.systemSmall, .systemMedium, .systemLarge]
+        if #available(iOSApplicationExtension 16.0, *) {
+            print("accessory families are supported")
+            families.append(.accessoryCircular)
+            families.append(.accessoryInline)
+            families.append(.accessoryRectangular)
+        } else {
+            print("accessory families are NOT supported")
+        }
+        return families
+    }
+
+    var body: some WidgetConfiguration {
+        IntentConfiguration(
+            kind: kind,
+            intent: ConfigurationIntent.self,
+            provider: HealthProvider()
+        ) { entry in
+            HealthEntryView(entry: entry)
+        }
+        .configurationDisplayName("My Health")
+        .description("This widget provides a snapshot of your HealthKit data.")
+        .supportedFamilies(supportedFamilies)
+    }
+}
+
+struct HealthPreviewProvider: PreviewProvider {
     static var previews: some View {
-        MyHealthSnaphotEntryView(
-            entry: MyEntry(
+        HealthEntryView(
+            entry: HealthEntry(
                 date: Date(),
                 stepCount: 5000,
                 distance: 0.9,
@@ -154,4 +207,3 @@ struct MyHealthSnaphot_Previews: PreviewProvider {
         .previewContext(WidgetPreviewContext(family: .systemSmall))
     }
 }
-

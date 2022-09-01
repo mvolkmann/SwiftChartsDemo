@@ -1,3 +1,4 @@
+// import ActivityKit
 import Charts
 import HealthKit
 import SwiftUI
@@ -407,6 +408,45 @@ struct HealthChartView: View {
             .pickerStyle(.segmented)
         }
     }
+
+    /*
+    private func showLiveActivity() {
+        /*
+        guard let Activity.ActivityAuthorizationInfo.areActivitiesEnabled else {
+            print("Live activities are not enabled.")
+            return
+        }
+        */
+
+        let attributes = HealthAttributes(
+            name: "Mark Volkmann"
+        )
+        let contentState =  HealthAttributes.LiveData(
+            stepCount: 1234,
+            miles: 0.62
+        )
+        do {
+            let activity = try Activity<HealthAttributes>.request(
+                attributes: attributes,
+                contentState: contentState,
+                pushType: nil
+            )
+        } catch {
+            print("HealthChartView.showLiveActivities: error =", error)
+        }
+    }
+
+    private func updateLiveActivity() {
+        let attributes = HealthAttributes.LiveData(
+            stepCount: 1267,
+            miles: 0.63
+        )
+        // await activity.update(using: updatedStatus)
+
+        // To end the live activity,
+        // await activity.end(dismissalPolicy: .immediate)
+    }
+    */
 
     private func updateWidgets() {
         WidgetCenter.shared.getCurrentConfigurations { result in
