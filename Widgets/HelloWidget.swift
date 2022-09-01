@@ -95,8 +95,8 @@ struct HelloEntryView : View {
             // Fill entire widget.
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(entry.backgroundColor)
-            .font(.system(size: 24))
             .foregroundColor(.white)
+            .font(.system(size: 24))
         }
     }
 }
@@ -107,25 +107,30 @@ struct HelloLockScreenWidget: View {
     let family: WidgetFamily
     let entry: HelloEntry
 
-    var body: some View {
+    private var color: Color {
         switch renderingMode {
         case .accented:
-            Text("\(family.rawValue) accented")
-                .foregroundColor(.orange)
-            // Apply this to all views whose color
-            // should be affected by the rendering mode.
-                .widgetAccentable()
+            return .orange
         case .fullColor:
-            Text("\(family.rawValue) full color")
-                .foregroundColor(.yellow)
-                .widgetAccentable()
+            return .red
         case .vibrant:
-            Text("\(family.rawValue) vibrant")
-                .foregroundColor(.green)
-                .widgetAccentable()
+            return .purple
         default:
-            EmptyView()
+            return .gray
         }
+    }
+
+    var body: some View {
+        VStack {
+            // Text("Hello")
+            Text(entry.name)
+        }
+        .widgetAccentable()
+        // Fill entire widget.
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(entry.backgroundColor)
+        .foregroundColor(color)
+        .font(.system(size: 10))
     }
 }
 
