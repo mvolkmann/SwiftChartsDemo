@@ -3,8 +3,17 @@ import Intents // TODO: need this?
 import SwiftUI
 import WidgetKit
 
+fileprivate let defaultBackgroundColor: Color = .gray
+fileprivate let defaultName = "World"
+
 struct HelloProvider: IntentTimelineProvider {
     private let store = HealthStore()
+
+    private let colors: [Color] = [defaultBackgroundColor, .red, .green, .blue]
+
+    func color(index: Int) -> Color {
+        index < colors.count ? colors[index] : defaultBackgroundColor
+    }
 
     func getSnapshot(
         for configuration: ConfigurationIntent,
@@ -19,12 +28,16 @@ struct HelloProvider: IntentTimelineProvider {
         in context: Context,
         completion: @escaping (Timeline<Entry>) -> ()
     ) {
+        print("getTimeline: configuration =", configuration)
         Task {
             let now = Date()
+            let name = configuration.value(forKey: "name") as? String ?? "unknown"
+            let colorIndex = configuration.value(forKey: "backgroundColorIndex") as? Int ?? 0
             let entries: [HelloEntry] = [
                 HelloEntry(
                     date: now,
-                    name: "World",
+                    name: name,
+                    backgroundColor: color(index: colorIndex),
                     configuration: configuration // TODO: Needed?
                 )
             ]
@@ -37,7 +50,8 @@ struct HelloProvider: IntentTimelineProvider {
     func placeholder(in context: Context) -> HelloEntry {
         HelloEntry(
             date: Date(),
-            name: "World",
+            name: defaultName,
+            backgroundColor: defaultBackgroundColor,
             configuration: ConfigurationIntent()
         )
     }
@@ -46,6 +60,7 @@ struct HelloProvider: IntentTimelineProvider {
 struct HelloEntry: TimelineEntry {
     let date: Date
     let name: String
+    let backgroundColor: Color
     let configuration: ConfigurationIntent // TODO: Is this needed?
 }
 
@@ -77,6 +92,9 @@ struct HelloEntryView : View {
                     EmptyView()
                 }
             }
+            // Fill entire widget.
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(entry.backgroundColor)
             .font(.system(size: 24))
             .foregroundColor(.white)
         }
@@ -111,7 +129,7 @@ struct HelloLockScreenWidget: View {
     }
 }
 
-// @main
+// @main // This must be removed when using a WidgetBundle.
 struct HelloWidget: Widget {
     let kind: String = "Hello"
 
@@ -147,7 +165,8 @@ struct HelloPreviewProvider: PreviewProvider {
         HelloEntryView(
             entry: HelloEntry(
                 date: Date(),
-                name: "World",
+                name: defaultName,
+                backgroundColor: defaultBackgroundColor,
                 configuration: ConfigurationIntent()
             )
         )

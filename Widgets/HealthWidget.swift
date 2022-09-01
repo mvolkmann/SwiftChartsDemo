@@ -163,7 +163,7 @@ struct HealthLockScreenWidget: View {
     }
 }
 
-// @main
+// @main // This must be removed when using a WidgetBundle.
 struct HealthWidget: Widget {
     let kind: String = "MyHealthSnaphot"
 
