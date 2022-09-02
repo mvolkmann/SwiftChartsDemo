@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		1A17BE40285964FB00B16F56 /* SwiftChartsDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A17BE3F285964FB00B16F56 /* SwiftChartsDemoApp.swift */; };
-		1A17BE42285964FB00B16F56 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A17BE41285964FB00B16F56 /* ContentView.swift */; };
 		1A17BE44285964FC00B16F56 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A17BE43285964FC00B16F56 /* Assets.xcassets */; };
 		1A17BE47285964FC00B16F56 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A17BE46285964FC00B16F56 /* Preview Assets.xcassets */; };
 		1A17BE4E285A255A00B16F56 /* PlayerChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A17BE4D285A255A00B16F56 /* PlayerChartView.swift */; };
@@ -74,7 +73,6 @@
 /* Begin PBXFileReference section */
 		1A17BE3C285964FB00B16F56 /* SwiftChartsDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftChartsDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A17BE3F285964FB00B16F56 /* SwiftChartsDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftChartsDemoApp.swift; sourceTree = "<group>"; };
-		1A17BE41285964FB00B16F56 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		1A17BE43285964FC00B16F56 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1A17BE46285964FC00B16F56 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		1A17BE4D285A255A00B16F56 /* PlayerChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerChartView.swift; sourceTree = "<group>"; };
@@ -147,8 +145,8 @@
 		1A17BE3E285964FB00B16F56 /* SwiftChartsDemo */ = {
 			isa = PBXGroup;
 			children = (
-				1A211E5928C122F700537347 /* Info.plist */,
 				1A17BE3F285964FB00B16F56 /* SwiftChartsDemoApp.swift */,
+				1A211E5928C122F700537347 /* Info.plist */,
 				1A17BE43285964FC00B16F56 /* Assets.xcassets */,
 				1AC4B1F228AC381200093F25 /* SwiftChartsDemo.entitlements */,
 				1A95877C28B12567007BE685 /* DragDetect.swift */,
@@ -227,7 +225,6 @@
 		1AC4B20128AC80EE00093F25 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				1A17BE41285964FB00B16F56 /* ContentView.swift */,
 				1A17BE4F285A25C300B16F56 /* HealthChartView.swift */,
 				1A17BE4D285A255A00B16F56 /* PlayerChartView.swift */,
 			);
@@ -338,7 +335,6 @@
 				1A17BE50285A25C300B16F56 /* HealthChartView.swift in Sources */,
 				1AC4B1DF28AC0AE900093F25 /* DateExtension.swift in Sources */,
 				1AC4B1DC28AC0A9200093F25 /* HealthStore.swift in Sources */,
-				1A17BE42285964FB00B16F56 /* ContentView.swift in Sources */,
 				1AC4B1E728AC0DBE00093F25 /* SleepDay.swift in Sources */,
 				1A17BE40285964FB00B16F56 /* SwiftChartsDemoApp.swift in Sources */,
 				1A95877F28B12B5C007BE685 /* ViewExtension.swift in Sources */,

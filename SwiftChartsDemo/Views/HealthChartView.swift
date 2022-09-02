@@ -301,6 +301,7 @@ struct HealthChartView: View {
             Spacer()
         }
         .onAppear(perform: loadData)
+        .onOpenURL(perform: navigate)
         .padding()
         .task {
             await HealthStore().requestPermission()
@@ -395,6 +396,22 @@ struct HealthChartView: View {
         }
     }
 
+    private func navigate(url: URL) {
+        var name = ""
+        switch url.absoluteString {
+        case "distanceWalkingRunning":
+            name = "Distance Walking & Running"
+        case "stepCount":
+            name = "Step Count"
+        default:
+            break
+        }
+
+        if let selected = Metrics.shared.metric(named: name) {
+            metric = selected
+        }
+    }
+
     private func picker(
         label: String,
         values: [String],
@@ -449,11 +466,18 @@ struct HealthChartView: View {
     */
 
     private func updateWidgets() {
+        // This reloads the timeline of all widgets associated with the app.
+        WidgetCenter.shared.reloadAllTimelines()
+
+        /* This approach can be used to only
+           reload the timeline of some of the widgets.
         WidgetCenter.shared.getCurrentConfigurations { result in
             guard case .success(let widgets) = result else { return }
             for widget in widgets {
+                // Could just call this with a hardcoded widget kind value.
                 WidgetCenter.shared.reloadTimelines(ofKind: widget.kind)
             }
         }
+        */
     }
 }

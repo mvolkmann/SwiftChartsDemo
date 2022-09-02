@@ -262,4 +262,8 @@ class Metrics {
             decimalPlaces: decimalPlaces
         )
     }
+
+    func metric(named: String) -> Metric? {
+        sorted.first { $0.name == named }
+    }
 }

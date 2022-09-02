@@ -111,20 +111,29 @@ struct HealthEntryView : View {
                     .font(.system(size: 24))
                     .fontWeight(.bold)
                 Text(entry.date.time)
-                Text("Steps: \(entry.stepCount)")
+                Link(destination: URL(string: "stepCount")!) {
+                    Text("Steps: \(entry.stepCount)")
+                }
 
                 switch family {
                 case .systemMedium:
-                    Text(String(format: "Miles: %.2f", entry.distance))
+                    Link(destination: URL(string: "distanceWalkingRunning")!) {
+                        Text(String(format: "Miles: %.2f", entry.distance))
+                    }
                 case .systemLarge:
-                    Text(String(format: "Miles: %.2f", entry.distance))
+                    Link(destination: URL(string: "distanceWalkingRunning")!) {
+                        Text(String(format: "Miles: %.2f", entry.distance))
+                    }
                     Text("Add more data here.")
+
+                // These are for lock screen widgets.
                 case .accessoryCircular:
                     HealthLockScreenWidget(family: family, entry: entry)
                 case .accessoryInline:
                     HealthLockScreenWidget(family: family, entry: entry)
                 case .accessoryRectangular:
                     HealthLockScreenWidget(family: family, entry: entry)
+
                 default:
                     EmptyView()
                 }
