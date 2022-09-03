@@ -41,6 +41,6 @@ extension View {
         onEnter: ((CGPoint) -> Void)? = nil,
         onExit: (() -> Void)? = nil
     ) -> some View {
-        self.modifier(DragWatcher(onEnter: onEnter, onExit: onExit))
+        modifier(DragWatcher(onEnter: onEnter, onExit: onExit))
     }
 }

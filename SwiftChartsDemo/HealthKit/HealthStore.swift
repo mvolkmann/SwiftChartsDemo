@@ -25,6 +25,7 @@ class HealthStore {
             options: .strictStartDate
         )
     }
+
     // Gets specific data from HealthKit.
     // swiftlint:disable function_body_length
     func getData(
@@ -68,7 +69,7 @@ class HealthStore {
         }
 
         if !datedValues.isEmpty,
-            HealthKitViewModel.addZeros.contains(identifier) {
+           HealthKitViewModel.addZeros.contains(identifier) {
             for index in 0 ..< datedValues.count - 1 {
                 let current = datedValues[index]
                 let next = datedValues[index + 1]

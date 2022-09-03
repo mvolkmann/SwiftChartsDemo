@@ -7,7 +7,7 @@ import WidgetKit
 struct HealthProvider: IntentTimelineProvider {
     private let store = HealthStore()
 
-    func placeholder(in context: Context) -> HealthEntry {
+    func placeholder(in _: Context) -> HealthEntry {
         HealthEntry(
             date: Date(),
             stepCount: 5000,
@@ -17,18 +17,18 @@ struct HealthProvider: IntentTimelineProvider {
     }
 
     func getSnapshot(
-        for configuration: ConfigurationIntent,
+        for _: ConfigurationIntent,
         in context: Context,
         completion: @escaping (HealthEntry) -> Void
     ) {
         /*
-        let entry = HealthEntry(
-            date: Date(),
-            stepCount: 5000,
-            configuration: configuration
-        )
-        completion(entry)
-        */
+         let entry = HealthEntry(
+             date: Date(),
+             stepCount: 5000,
+             configuration: configuration
+         )
+         completion(entry)
+         */
         completion(placeholder(in: context))
     }
 

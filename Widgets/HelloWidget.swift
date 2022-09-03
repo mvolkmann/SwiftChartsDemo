@@ -16,7 +16,7 @@ struct HelloProvider: IntentTimelineProvider {
     }
 
     func getSnapshot(
-        for configuration: ConfigurationIntent,
+        for _: ConfigurationIntent,
         in context: Context,
         completion: @escaping (HelloEntry) -> Void
     ) {
@@ -25,7 +25,7 @@ struct HelloProvider: IntentTimelineProvider {
 
     func getTimeline(
         for configuration: ConfigurationIntent,
-        in context: Context,
+        in _: Context,
         completion: @escaping (Timeline<Entry>) -> Void
     ) {
         print("getTimeline: configuration =", configuration)
@@ -47,7 +47,7 @@ struct HelloProvider: IntentTimelineProvider {
         }
     }
 
-    func placeholder(in context: Context) -> HelloEntry {
+    func placeholder(in _: Context) -> HelloEntry {
         HelloEntry(
             date: Date(),
             name: defaultName,

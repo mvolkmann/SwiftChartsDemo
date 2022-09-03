@@ -133,7 +133,7 @@ final class HealthKitViewModel: ObservableObject {
     }
 
     private func getSleepData(startDate: Date?) async throws {
-        return try await withCheckedThrowingContinuation { continuation in
+        try await withCheckedThrowingContinuation { continuation in
             let categoryType = HKCategoryType(.sleepAnalysis)
             let predicate = HKQuery.predicateForSamples(
                 withStart: startDate,
@@ -240,7 +240,7 @@ final class HealthKitViewModel: ObservableObject {
 
             case .awake:
                 let nextSample = index < dedupedSamples.count - 1 ?
-                dedupedSamples[index + 1] : nil
+                    dedupedSamples[index + 1] : nil
 
                 if let previousSample = previousSample, let nextSample = nextSample {
                     // If the previous and next samples are

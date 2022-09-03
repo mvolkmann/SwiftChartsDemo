@@ -138,10 +138,10 @@ struct HealthChartView: View {
                 // This causes a crash for some metrics.
                 .chartYScale(domain: minValue ... maxValue)
 
-                // Stop AreaMarks from spilling outside chart.
-                // But this cuts off the bottom half
-                // of the bottom number on the y-axis!
-                // .clipShape(Rectangle())
+            // Stop AreaMarks from spilling outside chart.
+            // But this cuts off the bottom half
+            // of the bottom number on the y-axis!
+            // .clipShape(Rectangle())
         }
 
         // Give the plot area a background color.
@@ -428,57 +428,57 @@ struct HealthChartView: View {
     }
 
     /*
-    private func showLiveActivity() {
-        /*
-        guard let Activity.ActivityAuthorizationInfo.areActivitiesEnabled else {
-            print("Live activities are not enabled.")
-            return
-        }
-        */
+     private func showLiveActivity() {
+         /*
+         guard let Activity.ActivityAuthorizationInfo.areActivitiesEnabled else {
+             print("Live activities are not enabled.")
+             return
+         }
+         */
 
-        let attributes = HealthAttributes(
-            name: "Mark Volkmann"
-        )
-        let contentState =  HealthAttributes.LiveData(
-            stepCount: 1234,
-            miles: 0.62
-        )
-        do {
-            let activity = try Activity<HealthAttributes>.request(
-                attributes: attributes,
-                contentState: contentState,
-                pushType: nil
-            )
-        } catch {
-            print("HealthChartView.showLiveActivities: error =", error)
-        }
-    }
+         let attributes = HealthAttributes(
+             name: "Mark Volkmann"
+         )
+         let contentState =  HealthAttributes.LiveData(
+             stepCount: 1234,
+             miles: 0.62
+         )
+         do {
+             let activity = try Activity<HealthAttributes>.request(
+                 attributes: attributes,
+                 contentState: contentState,
+                 pushType: nil
+             )
+         } catch {
+             print("HealthChartView.showLiveActivities: error =", error)
+         }
+     }
 
-    private func updateLiveActivity() {
-        let attributes = HealthAttributes.LiveData(
-            stepCount: 1267,
-            miles: 0.63
-        )
-        // await activity.update(using: updatedStatus)
+     private func updateLiveActivity() {
+         let attributes = HealthAttributes.LiveData(
+             stepCount: 1267,
+             miles: 0.63
+         )
+         // await activity.update(using: updatedStatus)
 
-        // To end the live activity,
-        // await activity.end(dismissalPolicy: .immediate)
-    }
-    */
+         // To end the live activity,
+         // await activity.end(dismissalPolicy: .immediate)
+     }
+     */
 
     private func updateWidgets() {
         // This reloads the timeline of all widgets associated with the app.
         WidgetCenter.shared.reloadAllTimelines()
 
         /* This approach can be used to only
-           reload the timeline of some of the widgets.
-        WidgetCenter.shared.getCurrentConfigurations { result in
-            guard case .success(let widgets) = result else { return }
-            for widget in widgets {
-                // Could just call this with a hardcoded widget kind value.
-                WidgetCenter.shared.reloadTimelines(ofKind: widget.kind)
-            }
-        }
-        */
+            reload the timeline of some of the widgets.
+         WidgetCenter.shared.getCurrentConfigurations { result in
+             guard case .success(let widgets) = result else { return }
+             for widget in widgets {
+                 // Could just call this with a hardcoded widget kind value.
+                 WidgetCenter.shared.reloadTimelines(ofKind: widget.kind)
+             }
+         }
+         */
     }
 }

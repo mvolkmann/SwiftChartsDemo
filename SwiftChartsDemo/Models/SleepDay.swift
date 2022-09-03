@@ -25,12 +25,12 @@ class SleepDay: CustomStringConvertible {
 
     var description: String {
         "lightSeconds: \(lightSeconds)\n" +
-        "deepSeconds: \(deepSeconds)\n" +
-        "remSeconds: \(remSeconds)\n" +
-        "interruptionSeconds: \(interruptionSeconds)\n" +
-        "interruptionCount: \(interruptionCount)\n" +
-        "timeToSleepSeconds: \(timeToSleepSeconds)\n" +
-        "timeToOutOfBedSeconds: \(timeToOutOfBedSeconds)"
+            "deepSeconds: \(deepSeconds)\n" +
+            "remSeconds: \(remSeconds)\n" +
+            "interruptionSeconds: \(interruptionSeconds)\n" +
+            "interruptionCount: \(interruptionCount)\n" +
+            "timeToSleepSeconds: \(timeToSleepSeconds)\n" +
+            "timeToOutOfBedSeconds: \(timeToOutOfBedSeconds)"
     }
 
     var totalSeconds: Int {
