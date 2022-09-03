@@ -177,7 +177,11 @@ struct HealthWidget: Widget {
     let kind: String = "MyHealthSnaphot"
 
     private var supportedFamilies: [WidgetFamily] {
-        var families: [WidgetFamily] = [.systemSmall, .systemMedium, .systemLarge]
+        var families: [WidgetFamily] = [
+            .systemSmall,
+            .systemMedium,
+            .systemLarge
+        ]
         if #available(iOSApplicationExtension 16.0, *) {
             print("accessory families are supported")
             families.append(.accessoryCircular)

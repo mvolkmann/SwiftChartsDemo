@@ -31,8 +31,10 @@ struct HelloProvider: IntentTimelineProvider {
         print("getTimeline: configuration =", configuration)
         Task {
             let now = Date()
-            let name = configuration.value(forKey: "name") as? String ?? "unknown"
-            let colorIndex = configuration.value(forKey: "backgroundColorIndex") as? Int ?? 0
+            let name = configuration
+                .value(forKey: "name") as? String ?? "unknown"
+            let colorIndex = configuration
+                .value(forKey: "backgroundColorIndex") as? Int ?? 0
             let entries: [HelloEntry] = [
                 HelloEntry(
                     date: now,
@@ -139,7 +141,11 @@ struct HelloWidget: Widget {
     let kind: String = "Hello"
 
     private var supportedFamilies: [WidgetFamily] {
-        var families: [WidgetFamily] = [.systemSmall, .systemMedium, .systemLarge]
+        var families: [WidgetFamily] = [
+            .systemSmall,
+            .systemMedium,
+            .systemLarge
+        ]
         if #available(iOSApplicationExtension 16.0, *) {
             print("accessory families are supported")
             families.append(.accessoryCircular)

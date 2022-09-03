@@ -18,7 +18,10 @@ class HealthStore {
         HKCharacteristicType.characteristicType(forIdentifier: typeId)!
     }
 
-    private func dateRangePredicate(startDate: Date, endDate: Date?) -> NSPredicate {
+    private func dateRangePredicate(
+        startDate: Date,
+        endDate: Date?
+    ) -> NSPredicate {
         HKQuery.predicateForSamples(
             withStart: startDate,
             end: endDate,

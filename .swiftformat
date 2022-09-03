@@ -30,17 +30,17 @@
 --indent 4
 --indentcase false
 --indentstrings false
---lifecycle 
+--lifecycle
 --lineaftermarks true
 --linebreaks lf
 --markcategories true
 --markextensions always
 --marktypes always
---maxwidth none
---modifierorder 
---nevertrailing 
---nospaceoperators 
---nowrapoperators 
+--maxwidth 80
+--modifierorder
+--nevertrailing
+--nospaceoperators
+--nowrapoperators
 --octalgrouping 4,8
 --operatorfunc spaced
 --organizetypes actor,class,enum,struct
@@ -55,16 +55,16 @@
 --stripunusedargs always
 --structthreshold 0
 --tabwidth unspecified
---trailingclosures 
+--trailingclosures
 --trimwhitespace always
 --typeattributes preserve
 --typemark "MARK: - %t"
 --varattributes preserve
 --voidtype void
---wraparguments preserve
---wrapcollections preserve
+--wraparguments before-first
+--wrapcollections before-first
 --wrapconditions preserve
---wrapparameters default
+--wrapparameters before-first
 --wrapreturntype preserve
 --wrapternary default
 --wraptypealiases preserve

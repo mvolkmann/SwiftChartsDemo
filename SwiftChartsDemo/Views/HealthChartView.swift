@@ -80,7 +80,8 @@ struct HealthChartView: View {
                 let datedValue = data[index]
 
                 let multiplier = metric.unit == .percent() ? 100.0 : 1.0
-                let value = datedValue.animate ? datedValue.value * multiplier : 0.0
+                let value = datedValue.animate ? datedValue
+                    .value * multiplier : 0.0
 
                 if chartType == "Bar" {
                     BarMark(
@@ -108,9 +109,15 @@ struct HealthChartView: View {
 
                 if datedValue.date == selectedDate {
                     RuleMark(x: .value("Date", selectedDate))
-                        .annotation(position: annotationPosition(index)) { annotation }
+                        .annotation(position: annotationPosition(index)) {
+                            annotation
+                        }
                         .foregroundStyle(.red)
-                        .lineStyle(.init(lineWidth: 1, dash: [10], dashPhase: 5))
+                        .lineStyle(.init(
+                            lineWidth: 1,
+                            dash: [10],
+                            dashPhase: 5
+                        ))
                 }
             }
         }

@@ -53,7 +53,8 @@ final class HealthKitViewModel: ObservableObject {
     @Published private(set) var stepCount: [DatedValue] = []
     @Published private(set) var vo2Max: [DatedValue] = []
     @Published private(set) var walkingAsymmetryPercentage: [DatedValue] = []
-    @Published private(set) var walkingDoubleSupportPercentage: [DatedValue] = []
+    @Published private(set) var walkingDoubleSupportPercentage: [DatedValue] =
+        []
     @Published private(set) var walkingHeartRateAverage: [DatedValue] = []
     @Published private(set) var walkingSpeed: [DatedValue] = []
     @Published private(set) var walkingSteadiness: [DatedValue] = []
@@ -242,14 +243,16 @@ final class HealthKitViewModel: ObservableObject {
                 let nextSample = index < dedupedSamples.count - 1 ?
                     dedupedSamples[index + 1] : nil
 
-                if let previousSample = previousSample, let nextSample = nextSample {
+                if let previousSample = previousSample,
+                   let nextSample = nextSample {
                     // If the previous and next samples are
                     // immediately before and after this one ...
                     if previousSample.endDate == sample.startDate,
                        sample.endDate == nextSample.startDate {
                         // If the previous and next samples
                         // are both are kinds of sleep ...
-                        let previousStage = getSleepStage(sample: previousSample)
+                        let previousStage =
+                            getSleepStage(sample: previousSample)
                         let nextStage = getSleepStage(sample: nextSample)
                         if previousStage.isSleep, nextStage.isSleep {
                             sleepDay.interruptionCount += 1
