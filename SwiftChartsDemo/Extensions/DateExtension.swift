@@ -94,7 +94,7 @@ extension Date {
     var month: String {
         formatted(.dateTime.month(.wide))
     }
-    
+
     // Returns a String representation of the Date in "h:mm:ss a" format.
     var time: String {
         let dateFormatter = DateFormatter()

@@ -19,7 +19,7 @@ struct HealthProvider: IntentTimelineProvider {
     func getSnapshot(
         for configuration: ConfigurationIntent,
         in context: Context,
-        completion: @escaping (HealthEntry) -> ()
+        completion: @escaping (HealthEntry) -> Void
     ) {
         /*
         let entry = HealthEntry(
@@ -53,7 +53,7 @@ struct HealthProvider: IntentTimelineProvider {
     func getTimeline(
         for configuration: ConfigurationIntent,
         in context: Context,
-        completion: @escaping (Timeline<Entry>) -> ()
+        completion: @escaping (Timeline<Entry>) -> Void
     ) {
         print("My_Health_Snapshot.getTimeLine: family =", context.family)
         Task {
@@ -93,7 +93,7 @@ struct HealthEntry: TimelineEntry {
     let configuration: ConfigurationIntent
 }
 
-struct HealthEntryView : View {
+struct HealthEntryView: View {
     @Environment(\.widgetFamily) var family
 
     var entry: HealthProvider.Entry

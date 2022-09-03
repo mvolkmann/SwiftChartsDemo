@@ -3,8 +3,8 @@ import Intents // TODO: need this?
 import SwiftUI
 import WidgetKit
 
-fileprivate let defaultBackgroundColor: Color = .gray
-fileprivate let defaultName = "World"
+private let defaultBackgroundColor: Color = .gray
+private let defaultName = "World"
 
 struct HelloProvider: IntentTimelineProvider {
     private let store = HealthStore()
@@ -18,7 +18,7 @@ struct HelloProvider: IntentTimelineProvider {
     func getSnapshot(
         for configuration: ConfigurationIntent,
         in context: Context,
-        completion: @escaping (HelloEntry) -> ()
+        completion: @escaping (HelloEntry) -> Void
     ) {
         completion(placeholder(in: context))
     }
@@ -26,7 +26,7 @@ struct HelloProvider: IntentTimelineProvider {
     func getTimeline(
         for configuration: ConfigurationIntent,
         in context: Context,
-        completion: @escaping (Timeline<Entry>) -> ()
+        completion: @escaping (Timeline<Entry>) -> Void
     ) {
         print("getTimeline: configuration =", configuration)
         Task {
@@ -64,7 +64,7 @@ struct HelloEntry: TimelineEntry {
     let configuration: ConfigurationIntent // TODO: Is this needed?
 }
 
-struct HelloEntryView : View {
+struct HelloEntryView: View {
     @Environment(\.widgetFamily) var family
 
     var entry: HelloProvider.Entry

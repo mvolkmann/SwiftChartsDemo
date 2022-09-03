@@ -1,5 +1,6 @@
 import HealthKit
 
+// swiftlint:disable type_body_length
 class HealthStore {
     // This assumes that HKHealthStore.isHealthDataAvailable()
     // has already been checked.
@@ -25,6 +26,7 @@ class HealthStore {
         )
     }
     // Gets specific data from HealthKit.
+    // swiftlint:disable function_body_length
     func getData(
         identifier: HKQuantityTypeIdentifier,
         startDate: Date? = nil,

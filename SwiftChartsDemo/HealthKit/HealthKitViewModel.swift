@@ -1,7 +1,6 @@
 import HealthKit
 import SwiftUI
 
-// swiftlint:disable file_length type_body_length
 final class HealthKitViewModel: ObservableObject {
     // This is a singleton class.
     static let shared = HealthKitViewModel()

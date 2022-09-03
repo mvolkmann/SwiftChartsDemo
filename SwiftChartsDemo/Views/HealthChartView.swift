@@ -6,6 +6,7 @@ import WidgetKit
 
 // Much of this code was inspired by the Kavsoft YouTube video at
 // https://www.youtube.com/watch?v=xS-fGYDD0qk.
+// swiftlint:disable file_length type_body_length
 struct HealthChartView: View {
     // MARK: - State
 
@@ -193,7 +194,7 @@ struct HealthChartView: View {
     }
 
     private var maxValue: Double {
-        let item = data.max { a, b in a.value < b.value }
+        let item = data.max { $0.value < $1.value }
         return item?.value ?? 0.0
     }
 
@@ -218,7 +219,7 @@ struct HealthChartView: View {
     }
 
     private var minValue: Double {
-        let item = data.min { a, b in a.value < b.value }
+        let item = data.min { $0.value < $1.value }
         return item?.value ?? 0.0
     }
 
@@ -313,7 +314,7 @@ struct HealthChartView: View {
     private func animateGraph() {
         updateWidgets()
 
-        for (index, _) in data.enumerated() {
+        for index in data.indices {
             // Delay rendering each data point a bit longer than the previous one.
             DispatchQueue.main.asyncAfter(
                 deadline: .now() + Double(index) * 0.015
@@ -351,7 +352,7 @@ struct HealthChartView: View {
     }
 
     private func chartOverlay(proxy: ChartProxy) -> some View {
-        GeometryReader { innerProxy in
+        GeometryReader { _ in
             Rectangle()
                 .fill(.clear)
                 .contentShape(Rectangle())

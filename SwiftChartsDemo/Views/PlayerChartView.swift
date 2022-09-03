@@ -11,7 +11,7 @@ let players: [Player] = [
     .init(name: "Mark", score: 6),
     .init(name: "Tami", score: 9),
     .init(name: "Amanda", score: 7),
-    .init(name: "Jeremy", score: 10),
+    .init(name: "Jeremy", score: 10)
 ]
 
 struct PlayerChartView: View {
