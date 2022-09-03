@@ -134,7 +134,8 @@ final class HealthKitViewModel: ObservableObject {
     }
 
     private func getSleepData(startDate: Date?) async throws {
-        return try await withCheckedThrowingContinuation { continuation in
+        typealias Cont = CheckedContinuation<Void, Error>
+        try await withCheckedThrowingContinuation { (continuation: Cont) in
             let categoryType = HKCategoryType(.sleepAnalysis)
             let predicate = HKQuery.predicateForSamples(
                 withStart: startDate,
