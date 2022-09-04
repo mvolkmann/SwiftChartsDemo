@@ -1,7 +1,44 @@
 import os
 
+// This is necessary to allow OSLogType values to be Dictionary keys.
+extension OSLogType: Hashable {}
+
 struct Log {
+    // MARK: - Constants
+
+    private static let typeToEmoji: [OSLogType: String] = [
+        .debug: "🪲",
+        .error: "❌",
+        .fault: "☠️",
+        .info: "🔎"
+    ]
+
+    private static let typeToName: [OSLogType: String] = [
+        .debug: "debug",
+        .error: "error",
+        .fault: "fault",
+        .info: "info"
+    ]
+
     private static let logger = Logger()
+
+    // MARK: - Methods
+
+    private static func buildMessage(
+        _ type: OSLogType,
+        _ message: String,
+        _ file: String,
+        _ function: String,
+        _ line: Int
+    ) -> String {
+        let fileName = file.components(separatedBy: "/").last ?? "unknown"
+        let emoji = typeToEmoji[type] ?? ""
+        let name = typeToName[type] ?? ""
+        return """
+        \(fileName) \(function) line \(line)
+        \(emoji) \(name): \(message)
+        """
+    }
 
     static func debug(
         _ message: String,
@@ -9,7 +46,7 @@ struct Log {
         function: String = #function,
         line: Int = #line
     ) {
-        let message = buildMessage("debug", message, file, function, line)
+        let message = buildMessage(.debug, message, file, function, line)
         log(message: message, type: .debug)
     }
 
@@ -29,7 +66,7 @@ struct Log {
         function: String = #function,
         line: Int = #line
     ) {
-        let message = buildMessage("error", message, file, function, line)
+        let message = buildMessage(.error, message, file, function, line)
         log(message: message, type: .error)
     }
 
@@ -39,7 +76,7 @@ struct Log {
         function: String = #function,
         line: Int = #line
     ) {
-        let message = buildMessage("fault", message, file, function, line)
+        let message = buildMessage(.fault, message, file, function, line)
         log(message: message, type: .fault)
     }
 
@@ -49,22 +86,8 @@ struct Log {
         function: String = #function,
         line: Int = #line
     ) {
-        let message = buildMessage("info", message, file, function, line)
+        let message = buildMessage(.info, message, file, function, line)
         log(message: message, type: .info)
-    }
-
-    private static func buildMessage(
-        _ kind: String,
-        _ message: String,
-        _ file: String,
-        _ function: String,
-        _ line: Int
-    ) -> String {
-        let fileName = file.components(separatedBy: "/").last ?? "unknown"
-        return """
-        \(fileName) \(function) line \(line)
-        \(kind): \(message)
-        """
     }
 
     /*
@@ -98,6 +121,7 @@ struct Log {
 
 // This simplifies print statements that use string interpolation
 // to print values with types like Bool.
+// For example: print("isHavingFun = \(sd(isHavingFun))")
 func sd(_ css: CustomStringConvertible) -> String {
     String(describing: css)
 }
