@@ -1,8 +1,6 @@
 import os
 
 struct Log {
-    static let shared = Log()
-
     let logger = Logger()
 
     func debug(
@@ -97,6 +95,8 @@ struct Log {
         }
     }
 }
+
+let log = Log()
 
 // This simplifies print statements that use string interpolation
 // to print values with types like Bool.

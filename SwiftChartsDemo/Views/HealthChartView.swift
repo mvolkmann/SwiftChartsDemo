@@ -379,7 +379,7 @@ struct HealthChartView: View {
     }
 
     private func loadData() {
-        Log.shared.info("entered")
+        log.info("entered")
         Task {
             do {
                 let newData = try await HealthStore().getData(
@@ -401,7 +401,7 @@ struct HealthChartView: View {
                 data = newData
                 animateGraph()
             } catch {
-                Log.shared.error(error)
+                log.error(error)
             }
         }
     }
