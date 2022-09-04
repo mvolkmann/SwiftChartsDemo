@@ -301,9 +301,11 @@ struct HealthChartView: View {
             Text(metricName)
             // Text("values go from \(minValue) to \(maxValue)")
             if data.count == 0 {
-                Text("No data was found for this metric and time span. " +
-                     "Perhaps you did not grant access to all health data.")
-                    .padding(.top)
+                Text(
+                    "No data was found for this metric and time span. " +
+                        "Perhaps you did not grant access to all health data."
+                )
+                .padding(.top)
             } else {
                 chart
             }

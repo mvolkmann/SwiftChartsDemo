@@ -1,6 +1,8 @@
 import os
 
 struct Log {
+    private static let logger = Logger()
+
     static func debug(
         _ message: String,
         file: String = #file,
@@ -51,7 +53,7 @@ struct Log {
         log(message: message, type: .info)
     }
 
-    static private func buildMessage(
+    private static func buildMessage(
         _ kind: String,
         _ message: String,
         _ file: String,
@@ -60,9 +62,9 @@ struct Log {
     ) -> String {
         let fileName = file.components(separatedBy: "/").last ?? "unknown"
         return """
-            \(fileName) \(function) line \(line)
-            \(kind): \(message)
-            """
+        \(fileName) \(function) line \(line)
+        \(kind): \(message)
+        """
     }
 
     /*
@@ -76,8 +78,7 @@ struct Log {
      If the data doesn’t contain sensitive information, change the
      privacy option of that value when logging the information."
      */
-    static private func log(message: String, type: OSLogType) {
-        let logger = Logger()
+    private static func log(message: String, type: OSLogType) {
         switch type {
         case .debug:
             // The argument in each of the logger calls below

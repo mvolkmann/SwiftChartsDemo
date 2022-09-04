@@ -205,7 +205,8 @@ class HealthStore {
             query.initialResultsHandler = { _, collection, error in
                 if let error = error {
                     Log.error(error)
-                    if error.localizedDescription == "Authorization not determined" {
+                    if error.localizedDescription ==
+                        "Authorization not determined" {
                         Task { await self.requestPermission() }
                     } else {
                         Log.error(error)

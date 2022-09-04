@@ -52,7 +52,7 @@ struct HealthProvider: IntentTimelineProvider {
 
     func getTimeline(
         for configuration: ConfigurationIntent,
-        in context: Context,
+        in _: Context,
         completion: @escaping (Timeline<Entry>) -> Void
     ) {
         Task {
