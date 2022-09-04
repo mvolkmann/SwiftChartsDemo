@@ -1,13 +1,9 @@
-import Foundation
 import os
 
 struct Log {
     static let shared = Log()
 
-    let logger = Logger(
-        subsystem: Bundle.main.bundleIdentifier!,
-        category: String(describing: Log.self)
-    )
+    let logger = Logger()
 
     func debug(
         _ message: String,
@@ -20,12 +16,22 @@ struct Log {
     }
 
     func error(
-        _ error: Error,
+        _ err: Error,
         file: String = #file,
         function: String = #function,
         line: Int = #line
     ) {
-        let message = buildMessage("error", error.localizedDescription, file, function, line)
+        let message = err.localizedDescription
+        error(message, file: file, function: function, line: line)
+    }
+
+    func error(
+        _ message: String,
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line
+    ) {
+        let message = buildMessage("error", message, file, function, line)
         logWithType(message: message, type: .error)
     }
 

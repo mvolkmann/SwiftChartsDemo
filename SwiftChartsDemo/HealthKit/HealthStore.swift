@@ -136,7 +136,7 @@ class HealthStore {
         do {
             dateOfBirth = try store.dateOfBirthComponents()
         } catch {
-            print("HealthKitViewModel.dateOfBirth: can't get birthdate")
+            Log.shared.error(error)
         }
         return dateOfBirth
     }
@@ -204,7 +204,7 @@ class HealthStore {
         return try await withCheckedThrowingContinuation { continuation in
             query.initialResultsHandler = { _, collection, error in
                 if let error = error {
-                    print("HealthStore.queryQuantityCollection: error =", error)
+                    Log.shared.error(error)
                     if error.localizedDescription == "Authorization not determined" {
                         Task { await self.requestPermission() }
                     } else {
@@ -218,7 +218,7 @@ class HealthStore {
                     }
                     continuation.resume(returning: statistics)
                 } else {
-                    print("HealthStore.queryQuantityCollection: no data found")
+                    Log.shared.error("no data found")
                     continuation.resume(returning: [HKStatistics]())
                 }
             }

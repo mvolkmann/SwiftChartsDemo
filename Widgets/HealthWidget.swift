@@ -45,7 +45,7 @@ struct HealthProvider: IntentTimelineProvider {
             }
             return data.first?.value ?? 0.0
         } catch {
-            print("error getting health data:", error)
+            Log.shared.error(error)
             return 0
         }
     }
@@ -55,7 +55,6 @@ struct HealthProvider: IntentTimelineProvider {
         in context: Context,
         completion: @escaping (Timeline<Entry>) -> Void
     ) {
-        print("My_Health_Snapshot.getTimeLine: family =", context.family)
         Task {
             // The app must be run at least once so it can
             // request authorization to access health data.
@@ -183,12 +182,11 @@ struct HealthWidget: Widget {
             .systemLarge
         ]
         if #available(iOSApplicationExtension 16.0, *) {
-            print("accessory families are supported")
             families.append(.accessoryCircular)
             families.append(.accessoryInline)
             families.append(.accessoryRectangular)
         } else {
-            print("accessory families are NOT supported")
+            Log.shared.info("accessory families are NOT supported")
         }
         return families
     }

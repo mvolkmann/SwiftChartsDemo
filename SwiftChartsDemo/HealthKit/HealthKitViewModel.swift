@@ -196,8 +196,10 @@ final class HealthKitViewModel: ObservableObject {
          for sample in dedupedSamples {
          let stage = getSleepStage(sample: sample)
          let seconds = Int(sample.endDate.timeIntervalSince(sample.startDate))
-         print("stage: \(stage); start: \(sample.startDate.ymdhm); " +
-         "end: \(sample.endDate.ymdhm) seconds: \(seconds)")
+         Log.shared.info(
+             "stage: \(stage); start: \(sample.startDate.ymdhm); " +
+             "end: \(sample.endDate.ymdhm) seconds: \(seconds)"
+         )
          }
          */
 

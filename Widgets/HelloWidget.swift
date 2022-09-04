@@ -28,7 +28,6 @@ struct HelloProvider: IntentTimelineProvider {
         in _: Context,
         completion: @escaping (Timeline<Entry>) -> Void
     ) {
-        print("getTimeline: configuration =", configuration)
         Task {
             let now = Date()
             let name = configuration
@@ -147,12 +146,11 @@ struct HelloWidget: Widget {
             .systemLarge
         ]
         if #available(iOSApplicationExtension 16.0, *) {
-            print("accessory families are supported")
             families.append(.accessoryCircular)
             families.append(.accessoryInline)
             families.append(.accessoryRectangular)
         } else {
-            print("accessory families are NOT supported")
+            Log.shared.info("accessory families are NOT supported")
         }
         return families
     }

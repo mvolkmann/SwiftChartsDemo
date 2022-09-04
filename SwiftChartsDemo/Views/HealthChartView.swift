@@ -379,7 +379,7 @@ struct HealthChartView: View {
     }
 
     private func loadData() {
-        print("HealthChartView.loadData: entered")
+        Log.shared.info("entered")
         Task {
             do {
                 let newData = try await HealthStore().getData(
@@ -401,7 +401,7 @@ struct HealthChartView: View {
                 data = newData
                 animateGraph()
             } catch {
-                print("error getting health data:", error)
+                Log.shared.error(error)
             }
         }
     }
@@ -440,7 +440,7 @@ struct HealthChartView: View {
      private func showLiveActivity() {
          /*
          guard let Activity.ActivityAuthorizationInfo.areActivitiesEnabled else {
-             print("Live activities are not enabled.")
+             Log.shared.debug("Live activities are not enabled.")
              return
          }
          */
@@ -459,7 +459,7 @@ struct HealthChartView: View {
                  pushType: nil
              )
          } catch {
-             print("HealthChartView.showLiveActivities: error =", error)
+             Log.shared.error(error)
          }
      }
 
