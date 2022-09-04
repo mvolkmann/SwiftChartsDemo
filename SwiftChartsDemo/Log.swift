@@ -12,7 +12,7 @@ struct Log {
         line: Int = #line
     ) {
         let message = buildMessage("debug", message, file, function, line)
-        logWithType(message: message, type: .debug)
+        log(message: message, type: .debug)
     }
 
     func error(
@@ -32,7 +32,7 @@ struct Log {
         line: Int = #line
     ) {
         let message = buildMessage("error", message, file, function, line)
-        logWithType(message: message, type: .error)
+        log(message: message, type: .error)
     }
 
     func fault(
@@ -42,7 +42,7 @@ struct Log {
         line: Int = #line
     ) {
         let message = buildMessage("fault", message, file, function, line)
-        logWithType(message: message, type: .fault)
+        log(message: message, type: .fault)
     }
 
     func info(
@@ -52,7 +52,7 @@ struct Log {
         line: Int = #line
     ) {
         let message = buildMessage("info", message, file, function, line)
-        logWithType(message: message, type: .info)
+        log(message: message, type: .info)
     }
 
     private func buildMessage(
@@ -69,9 +69,22 @@ struct Log {
             """
     }
 
-    private func logWithType(message: String, type: OSLogType) {
+    /*
+     This sets "privacy" to "public" to prevent values
+     in string interpolations from being redacted.
+     From https://developer.apple.com/documentation/os/logger
+     "When you include an interpolated string or custom object in your message,
+     the system redacts the value of that string or object by default.
+     This behavior prevents the system from leaking potentially user-sensitive
+     information in the log files, such as the user’s account information.
+     If the data doesn’t contain sensitive information, change the
+     privacy option of that value when logging the information."
+     */
+    private func log(message: String, type: OSLogType) {
         switch type {
         case .debug:
+            // The argument in each of the logger calls below
+            // MUST be a string interpolation!
             logger.debug("\(message, privacy: .public)")
         case .error:
             logger.error("\(message, privacy: .public)")
