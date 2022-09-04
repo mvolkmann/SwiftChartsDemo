@@ -45,7 +45,7 @@ struct HealthProvider: IntentTimelineProvider {
             }
             return data.first?.value ?? 0.0
         } catch {
-            log.error(error)
+            Log.error(error)
             return 0
         }
     }
@@ -186,7 +186,7 @@ struct HealthWidget: Widget {
             families.append(.accessoryInline)
             families.append(.accessoryRectangular)
         } else {
-            log.info("accessory families are NOT supported")
+            Log.info("accessory families are NOT supported")
         }
         return families
     }

@@ -150,7 +150,7 @@ struct HelloWidget: Widget {
             families.append(.accessoryInline)
             families.append(.accessoryRectangular)
         } else {
-            log.info("accessory families are NOT supported")
+            Log.info("accessory families are NOT supported")
         }
         return families
     }

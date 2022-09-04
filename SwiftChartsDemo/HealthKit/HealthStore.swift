@@ -136,7 +136,7 @@ class HealthStore {
         do {
             dateOfBirth = try store.dateOfBirthComponents()
         } catch {
-            log.error(error)
+            Log.error(error)
         }
         return dateOfBirth
     }
@@ -204,11 +204,11 @@ class HealthStore {
         return try await withCheckedThrowingContinuation { continuation in
             query.initialResultsHandler = { _, collection, error in
                 if let error = error {
-                    log.error(error)
+                    Log.error(error)
                     if error.localizedDescription == "Authorization not determined" {
                         Task { await self.requestPermission() }
                     } else {
-                        log.error(error)
+                        Log.error(error)
                     }
                     continuation.resume(throwing: error)
                 } else if let collection = collection {
@@ -218,7 +218,7 @@ class HealthStore {
                     }
                     continuation.resume(returning: statistics)
                 } else {
-                    log.error("no data found")
+                    Log.error("no data found")
                     continuation.resume(returning: [HKStatistics]())
                 }
             }
@@ -350,11 +350,11 @@ class HealthStore {
             // Request permission from the user to access HealthKit data.
             // If they have already granted permission,
             // they will not be prompted again.
-            log.info("starting")
+            Log.info("starting")
             try await requestAuthorization()
-            log.info("finished")
+            Log.info("finished")
         } catch {
-            log.error(error)
+            Log.error(error)
         }
     }
 

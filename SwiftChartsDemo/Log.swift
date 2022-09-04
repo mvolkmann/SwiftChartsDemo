@@ -1,9 +1,7 @@
 import os
 
 struct Log {
-    let logger = Logger()
-
-    func debug(
+    static func debug(
         _ message: String,
         file: String = #file,
         function: String = #function,
@@ -13,7 +11,7 @@ struct Log {
         log(message: message, type: .debug)
     }
 
-    func error(
+    static func error(
         _ err: Error,
         file: String = #file,
         function: String = #function,
@@ -23,7 +21,7 @@ struct Log {
         error(message, file: file, function: function, line: line)
     }
 
-    func error(
+    static func error(
         _ message: String,
         file: String = #file,
         function: String = #function,
@@ -33,7 +31,7 @@ struct Log {
         log(message: message, type: .error)
     }
 
-    func fault(
+    static func fault(
         _ message: String,
         file: String = #file,
         function: String = #function,
@@ -43,7 +41,7 @@ struct Log {
         log(message: message, type: .fault)
     }
 
-    func info(
+    static func info(
         _ message: String,
         file: String = #file,
         function: String = #function,
@@ -53,7 +51,7 @@ struct Log {
         log(message: message, type: .info)
     }
 
-    private func buildMessage(
+    static private func buildMessage(
         _ kind: String,
         _ message: String,
         _ file: String,
@@ -78,7 +76,8 @@ struct Log {
      If the data doesn’t contain sensitive information, change the
      privacy option of that value when logging the information."
      */
-    private func log(message: String, type: OSLogType) {
+    static private func log(message: String, type: OSLogType) {
+        let logger = Logger()
         switch type {
         case .debug:
             // The argument in each of the logger calls below
@@ -95,8 +94,6 @@ struct Log {
         }
     }
 }
-
-let log = Log()
 
 // This simplifies print statements that use string interpolation
 // to print values with types like Bool.
