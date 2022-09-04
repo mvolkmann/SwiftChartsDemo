@@ -204,14 +204,24 @@ class HealthStore {
         return try await withCheckedThrowingContinuation { continuation in
             query.initialResultsHandler = { _, collection, error in
                 if let error = error {
-                    handleError(
-                        "HealthStore.queryQuantityCollection",
-                        error
-                    )
+                    print("HealthStore.queryQuantityCollection: error =", error)
+                    if error.localizedDescription == "Authorization not determined" {
+                        Task { await self.requestPermission() }
+                    } else {
+                        handleError(
+                            "HealthStore.queryQuantityCollection",
+                            error
+                        )
+                    }
                     continuation.resume(throwing: error)
                 } else if let collection = collection {
-                    continuation.resume(returning: collection.statistics())
+                    let statistics = collection.statistics()
+                    if statistics.count == 0 {
+                        Task { await self.requestPermission() }
+                    }
+                    continuation.resume(returning: statistics)
                 } else {
+                    print("HealthStore.queryQuantityCollection: no data found")
                     continuation.resume(returning: [HKStatistics]())
                 }
             }
@@ -343,9 +353,11 @@ class HealthStore {
             // Request permission from the user to access HealthKit data.
             // If they have already granted permission,
             // they will not be prompted again.
+            print("HealthStore.requestPermission: starting")
             try await requestAuthorization()
+            print("HealthStore.requestPermission: finished")
         } catch {
-            handleError("HealthKitViewModel.load", error)
+            handleError("HealthStore.requestPermission", error)
         }
     }
 

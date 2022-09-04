@@ -301,18 +301,19 @@ struct HealthChartView: View {
             Text(metricName)
             // Text("values go from \(minValue) to \(maxValue)")
             if data.count == 0 {
-                Text("No data was found for this metric and time span.")
+                Text("No data was found for this metric and time span. " +
+                     "Perhaps you did not grant access to all health data.")
                     .padding(.top)
             } else {
                 chart
             }
             Spacer()
         }
-        .onAppear(perform: loadData)
         .onOpenURL(perform: navigate)
         .padding()
         .task {
             await HealthStore().requestPermission()
+            loadData()
         }
     }
 
@@ -378,6 +379,7 @@ struct HealthChartView: View {
     }
 
     private func loadData() {
+        print("HealthChartView.loadData: entered")
         Task {
             do {
                 let newData = try await HealthStore().getData(
