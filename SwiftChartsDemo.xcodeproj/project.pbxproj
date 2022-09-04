@@ -31,12 +31,10 @@
 		1ABDDBA828BED88700830D46 /* Sleep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC4B1EE28AC0F8200093F25 /* Sleep.swift */; };
 		1ABDDBA928BED89A00830D46 /* HealthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC4B1DB28AC0A9200093F25 /* HealthStore.swift */; };
 		1ABDDBAA28BED8CF00830D46 /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC4B1DE28AC0AE900093F25 /* DateExtension.swift */; };
-		1ABDDBAB28BED8DE00830D46 /* Global.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC4B1E028AC0B4200093F25 /* Global.swift */; };
 		1ABDDBAC28BED8EB00830D46 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC4B1F028AC108500093F25 /* StringExtension.swift */; };
 		1ABDDBB128C00DAA00830D46 /* MyLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ABDDBB028C00DAA00830D46 /* MyLiveActivity.swift */; };
 		1AC4B1DC28AC0A9200093F25 /* HealthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC4B1DB28AC0A9200093F25 /* HealthStore.swift */; };
 		1AC4B1DF28AC0AE900093F25 /* DateExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC4B1DE28AC0AE900093F25 /* DateExtension.swift */; };
-		1AC4B1E128AC0B4200093F25 /* Global.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC4B1E028AC0B4200093F25 /* Global.swift */; };
 		1AC4B1E428AC0D4100093F25 /* HealthKitViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC4B1E328AC0D4100093F25 /* HealthKitViewModel.swift */; };
 		1AC4B1E728AC0DBE00093F25 /* SleepDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC4B1E628AC0DBE00093F25 /* SleepDay.swift */; };
 		1AC4B1E928AC0E0900093F25 /* SleepMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC4B1E828AC0E0900093F25 /* SleepMetrics.swift */; };
@@ -44,6 +42,8 @@
 		1AC4B1ED28AC0F3D00093F25 /* Metrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC4B1EC28AC0F3D00093F25 /* Metrics.swift */; };
 		1AC4B1EF28AC0F8200093F25 /* Sleep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC4B1EE28AC0F8200093F25 /* Sleep.swift */; };
 		1AC4B1F128AC108500093F25 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AC4B1F028AC108500093F25 /* StringExtension.swift */; };
+		1AE8AE6E28C424D60098E9FF /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE8AE6D28C424D60098E9FF /* Log.swift */; };
+		1AE8AE6F28C4276F0098E9FF /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE8AE6D28C424D60098E9FF /* Log.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,7 +92,6 @@
 		1ABDDBB028C00DAA00830D46 /* MyLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyLiveActivity.swift; sourceTree = "<group>"; };
 		1AC4B1DB28AC0A9200093F25 /* HealthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStore.swift; sourceTree = "<group>"; };
 		1AC4B1DE28AC0AE900093F25 /* DateExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateExtension.swift; sourceTree = "<group>"; };
-		1AC4B1E028AC0B4200093F25 /* Global.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Global.swift; sourceTree = "<group>"; };
 		1AC4B1E328AC0D4100093F25 /* HealthKitViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitViewModel.swift; sourceTree = "<group>"; };
 		1AC4B1E628AC0DBE00093F25 /* SleepDay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepDay.swift; sourceTree = "<group>"; };
 		1AC4B1E828AC0E0900093F25 /* SleepMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepMetrics.swift; sourceTree = "<group>"; };
@@ -101,6 +100,7 @@
 		1AC4B1EE28AC0F8200093F25 /* Sleep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sleep.swift; sourceTree = "<group>"; };
 		1AC4B1F028AC108500093F25 /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 		1AC4B1F228AC381200093F25 /* SwiftChartsDemo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SwiftChartsDemo.entitlements; sourceTree = "<group>"; };
+		1AE8AE6D28C424D60098E9FF /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -150,7 +150,7 @@
 				1A17BE43285964FC00B16F56 /* Assets.xcassets */,
 				1AC4B1F228AC381200093F25 /* SwiftChartsDemo.entitlements */,
 				1A95877C28B12567007BE685 /* DragDetect.swift */,
-				1AC4B1E028AC0B4200093F25 /* Global.swift */,
+				1AE8AE6D28C424D60098E9FF /* Log.swift */,
 				1ABDDBB028C00DAA00830D46 /* MyLiveActivity.swift */,
 				1AC4B1DD28AC0AD100093F25 /* Extensions */,
 				1AC4B1E228AC0D2D00093F25 /* HealthKit */,
@@ -345,10 +345,10 @@
 				1AC4B1F128AC108500093F25 /* StringExtension.swift in Sources */,
 				1AC4B1EF28AC0F8200093F25 /* Sleep.swift in Sources */,
 				1ABDDBB128C00DAA00830D46 /* MyLiveActivity.swift in Sources */,
+				1AE8AE6E28C424D60098E9FF /* Log.swift in Sources */,
 				1AC4B1E928AC0E0900093F25 /* SleepMetrics.swift in Sources */,
 				1AC4B1EB28AC0E5A00093F25 /* DatedValue.swift in Sources */,
 				1A17BE4E285A255A00B16F56 /* PlayerChartView.swift in Sources */,
-				1AC4B1E128AC0B4200093F25 /* Global.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -363,11 +363,11 @@
 				1A211E5528C10F7000537347 /* HelloWidget.swift in Sources */,
 				1ABDDB9A28BED24F00830D46 /* Widgets.intentdefinition in Sources */,
 				1ABDDB9528BED24E00830D46 /* HealthWidget.swift in Sources */,
-				1ABDDBAB28BED8DE00830D46 /* Global.swift in Sources */,
 				1ABDDBA628BED85D00830D46 /* SleepDay.swift in Sources */,
 				1A5962A828C104D100AFDAE7 /* MyBundle.swift in Sources */,
 				1ABDDBAC28BED8EB00830D46 /* StringExtension.swift in Sources */,
 				1ABDDBA428BED3D600830D46 /* Metrics.swift in Sources */,
+				1AE8AE6F28C4276F0098E9FF /* Log.swift in Sources */,
 				1ABDDBA928BED89A00830D46 /* HealthStore.swift in Sources */,
 				1ABDDBA828BED88700830D46 /* Sleep.swift in Sources */,
 			);

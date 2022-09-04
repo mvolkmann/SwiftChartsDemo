@@ -208,10 +208,7 @@ class HealthStore {
                     if error.localizedDescription == "Authorization not determined" {
                         Task { await self.requestPermission() }
                     } else {
-                        handleError(
-                            "HealthStore.queryQuantityCollection",
-                            error
-                        )
+                        Log.shared.error(error)
                     }
                     continuation.resume(throwing: error)
                 } else if let collection = collection {
@@ -353,11 +350,11 @@ class HealthStore {
             // Request permission from the user to access HealthKit data.
             // If they have already granted permission,
             // they will not be prompted again.
-            print("HealthStore.requestPermission: starting")
+            Log.shared.info("starting")
             try await requestAuthorization()
-            print("HealthStore.requestPermission: finished")
+            Log.shared.info("finished")
         } catch {
-            handleError("HealthStore.requestPermission", error)
+            Log.shared.error(error)
         }
     }
 
