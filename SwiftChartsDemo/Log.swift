@@ -1,9 +1,10 @@
+import Foundation // for Bundle
 import os
 
 // This is necessary to allow OSLogType values to be Dictionary keys.
 extension OSLogType: Hashable {}
 
-struct Log {
+enum Log {
     // MARK: - Constants
 
     private static let typeToEmoji: [OSLogType: String] = [
@@ -20,7 +21,10 @@ struct Log {
         .info: "info"
     ]
 
-    private static let logger = Logger()
+    private static let logger = Logger(
+        subsystem: Bundle.main.bundleIdentifier!,
+        category: ""
+    )
 
     // MARK: - Methods
 

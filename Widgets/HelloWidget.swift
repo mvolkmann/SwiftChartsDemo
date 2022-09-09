@@ -1,5 +1,4 @@
 import HealthKit
-import Intents // TODO: need this?
 import SwiftUI
 import WidgetKit
 
@@ -7,6 +6,15 @@ private let defaultBackgroundColor: Color = .gray
 private let defaultName = "World"
 
 struct HelloProvider: IntentTimelineProvider {
+    typealias Entry = HelloEntry
+
+    static let mockEntry = Entry(
+        date: Date(),
+        configuration: ConfigurationIntent(),
+        name: defaultName,
+        backgroundColor: defaultBackgroundColor
+    )
+
     private let store = HealthStore()
 
     private let colors: [Color] = [defaultBackgroundColor, .red, .green, .blue]
@@ -18,7 +26,7 @@ struct HelloProvider: IntentTimelineProvider {
     func getSnapshot(
         for _: ConfigurationIntent,
         in context: Context,
-        completion: @escaping (HelloEntry) -> Void
+        completion: @escaping (Entry) -> Void
     ) {
         completion(placeholder(in: context))
     }
@@ -34,12 +42,12 @@ struct HelloProvider: IntentTimelineProvider {
                 .value(forKey: "name") as? String ?? "unknown"
             let colorIndex = configuration
                 .value(forKey: "backgroundColorIndex") as? Int ?? 0
-            let entries: [HelloEntry] = [
-                HelloEntry(
+            let entries: [Entry] = [
+                Entry(
                     date: now,
+                    configuration: configuration,
                     name: name,
-                    backgroundColor: color(index: colorIndex),
-                    configuration: configuration // TODO: Needed?
+                    backgroundColor: color(index: colorIndex)
                 )
             ]
 
@@ -48,25 +56,20 @@ struct HelloProvider: IntentTimelineProvider {
         }
     }
 
-    func placeholder(in _: Context) -> HelloEntry {
-        HelloEntry(
-            date: Date(),
-            name: defaultName,
-            backgroundColor: defaultBackgroundColor,
-            configuration: ConfigurationIntent()
-        )
+    func placeholder(in _: Context) -> Entry {
+        HelloProvider.mockEntry
     }
 }
 
 struct HelloEntry: TimelineEntry {
     let date: Date
+    let configuration: ConfigurationIntent
     let name: String
     let backgroundColor: Color
-    let configuration: ConfigurationIntent // TODO: Is this needed?
 }
 
 struct HelloEntryView: View {
-    @Environment(\.widgetFamily) var family
+    @Environment(\.widgetFamily) var widgetFamily
 
     var entry: HelloProvider.Entry
 
@@ -78,17 +81,17 @@ struct HelloEntryView: View {
                 Text(entry.date.time)
                 Text("Hello, \(entry.name)!")
 
-                switch family {
+                switch widgetFamily {
                 case .systemMedium:
                     Text("Medium")
                 case .systemLarge:
                     Text("Large")
                 case .accessoryCircular:
-                    HelloLockScreenWidget(family: family, entry: entry)
+                    HelloLockScreenWidget(family: widgetFamily, entry: entry)
                 case .accessoryInline:
-                    HelloLockScreenWidget(family: family, entry: entry)
+                    HelloLockScreenWidget(family: widgetFamily, entry: entry)
                 case .accessoryRectangular:
-                    HelloLockScreenWidget(family: family, entry: entry)
+                    HelloLockScreenWidget(family: widgetFamily, entry: entry)
                 default:
                     EmptyView()
                 }
@@ -172,12 +175,7 @@ struct HelloWidget: Widget {
 struct HelloPreviewProvider: PreviewProvider {
     static var previews: some View {
         HelloEntryView(
-            entry: HelloEntry(
-                date: Date(),
-                name: defaultName,
-                backgroundColor: defaultBackgroundColor,
-                configuration: ConfigurationIntent()
-            )
+            entry: HelloProvider.mockEntry
         )
         .previewContext(WidgetPreviewContext(family: .systemSmall))
     }
