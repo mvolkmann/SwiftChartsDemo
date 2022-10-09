@@ -95,7 +95,13 @@ struct HealthChartView: View {
                         y: .value("Value", value)
                     )
                     .interpolationMethod(interpolationMethod)
-                    .symbol(by: .value("Date", datedValue.date))
+                    // TODO: Why does this cause the line to disappear?
+                    // .symbol(by: .value("Date", datedValue.date))
+
+                    PointMark(
+                        x: .value("Date", datedValue.date),
+                        y: .value("Value", value)
+                    )
 
                     if !canScaleYAxis(metric: metric) {
                         AreaMark(
