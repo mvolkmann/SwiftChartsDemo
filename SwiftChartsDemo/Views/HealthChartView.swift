@@ -72,7 +72,7 @@ struct HealthChartView: View {
             // position of the RuleMark annotation below.
 
             // With this version of Foreach, we get "The compiler is
-            // unable to type-check this expression in a resaonable time".
+            // unable to type-check this expression in a reasonable time".
             // ForEach(data.enumerated(), id: \.self) { index, datedValue in
 
             // This version of ForEach works.
@@ -376,6 +376,7 @@ struct HealthChartView: View {
                     DragGesture()
                         .onChanged { value in
                             let location = value.location
+                            print("location =", location)
                             if let date: String = proxy.value(atX: location.x) {
                                 selectedDate = date
                                 selectedValue = dateToValueMap[date] ?? 0.0
